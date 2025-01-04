@@ -1,0 +1,1 @@
+const t=new Float64Array(3),d=new Float32Array(2).fill(100/3),c={update:()=>{},draw:()=>{},setClock:x=>d[0]=1000/x,setFps:x=>d[1]=1000/x},l=()=>{t[2]=performance.now();while(t[0]<t[2]){c.update();t[0]+=d[0]}if(t[1]<t[2]){c.draw();while(t[1]<t[2]){t[1]+=d[1]}}setTimeout(l)};l();export default c
