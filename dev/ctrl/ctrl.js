@@ -1,7 +1,7 @@
 /*
 - virtual joystick:
-  2 analogs
-  8 buttons
+  4 axis (int16)
+  8 buttons (boolean)
 
 - 4 jotsticks, j0 is mouse controls
 */
@@ -11,27 +11,68 @@
 // Creating virtual joystick //
 ///////////////////////////////
 
-const padBuffer = new ArrayBuffer(60);
+const padBuffer = new ArrayBuffer(80);
 const padData = new Int8Array(padBuffer);
 
-function Pad(id){
-  const offset = 12 * id;
-  this.axis = new Int8Array(padBuffer, offset, 4);
-  this.btn = new Int8Array(padBuffer, offset + 4, 8);
+const pad = [];
+for(let i=0;i<5;i++){
+  pad.push({
+    axis: new Int16Array(padBuffer, i * 16, 4),
+    btn: new Uint8ClampedArray(padBuffer, i * 16 + 8, 8)
+  });
 }
-export const j0 = {
-  axis: new Int16Array(padBuffer, 0, 2),
-  btn: new Int8Array(padBuffer, 4, 8)
-};
+
+
+////////////////////////////////////
+// touch controls
+
+let targetElement = document.body;
+let targetX = 0;
+let targetY = 0;
+let targetS = 1;
+
+const tStart = (e)=>{
+  const t = e.changedTouches[0];
+  pad[0].axis[0] = (t.pageX - targetX) * targetS;
+  pad[0].axis[1] = (t.pageY - targetY) * targetS;
+}
+
+const newTarget = (ele,w)=>{
+  targetElement.removeEventListener('touchstart',tStart);
+  targetElement = ele;
+  targetX = ele.offsetLeft + ele.offsetWidth / 2;
+  targetY = ele.offsetTop + ele.offsetHeight / 2;
+  targetS = 2000 / ele.offsetWidth;
+  targetElement.addEventListener('touchstart',tStart);
+}
+let iX = 0;
+setInterval(function(){
+  // iX = (iX+1)%8;
+  //pad[0].btn[iX] = !pad[0].btn[iX]
+  
+},1000)
+
+
+
+///////////////////////////////////
+
+function Pad(x){
+  this.axis = (a) => pad[x].axis[a];
+  this.btn = (b) => pad[x].btn[b];
+}
+export const j0 = new Pad(0);
 export const j1 = new Pad(1);
 export const j2 = new Pad(2);
 export const j3 = new Pad(3);
 export const j4 = new Pad(4);
 
+j0.target = (ele,w)=>newTarget(ele,w);
+
 ///////////////////
 // Configuration //
 ///////////////////
 
+/*
 const dCfg = {
   kb:{
     KeyA: -12,
@@ -203,3 +244,12 @@ const muEvt = e=>{
 }
 window.addEventListener('contextmenu', (e)=>{e.preventDefault()});
 window.addEventListener('mouseup', muEvt);
+
+
+*/
+
+
+/*
+notes:
+menuBtn.innerHTML = x?`w8`:'&#10012; <sub>&#9900;&#9900;</sub> &#10070;'
+*/
