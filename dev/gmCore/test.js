@@ -9,8 +9,8 @@ _cfg.setClock(10);
 _cfg.tpAdd(-1,.5,.8,.5,'btn',4);
 _cfg.tpRemove(-1,.5);
 _cfg.tpAdd(.2,.5,.8,.5,'btn',5);
-_cfg.tpAdd(-1,-1,1,1,'stick',[0,1]);
-_cfg.tpAdd(0,-1,1,1,'swipe',[1,2,-1,0]);
+_cfg.tpAdd(-1,-1,1,1,'stick',[0,1],4);
+_cfg.tpAdd(0,-1,1,1,'swipe',[1,2,-1,0],5);
 
 
 // draw methods
@@ -57,8 +57,20 @@ const drawPad = (x,y,pad)=>{
 
 // init
 let hue = 0;
+let pointerX = 0;
+let pointerY = 0;
+
+
 _loop.update = ()=>{
   hue = (hue + 5) % 360;
+  pointerX += _pad[0].axis[2]*10;
+  pointerY -= _pad[0].axis[3]*10;
+  if(_pad[0].btn[4]){
+    _cfg.pointerLock(true);
+  }
+  if(_pad[0].btn[5]){
+    _cfg.pointerLock(false);
+  }
 }
 _loop.draw = ()=>{
   ctx.clearRect(0,0,640,360);
@@ -77,5 +89,6 @@ _loop.draw = ()=>{
   ctx.strokeRect(.2*320+320,.5*-180+180,.8*320,.5*-180);
   ctx.strokeRect(-1*320+320,-1*-180+180,1*320,1*-180);
   ctx.strokeRect(0*320+320,-1*-180+180,1*320,1*-180);
+  drawCircle(pointerX+156,pointerY+92,24,'#f008');
 }
 

@@ -2,7 +2,7 @@ import gfx from './gfx.js';
 
 const layer1 = gfx.iBuffer();
 const layer2 = gfx.iBuffer();
-const layer3 = gfx.sBuffer('./vdata.txt', './fdata.txt');
+const layer3 = gfx.sBuffer();
 let loaded = false;     // since sprites are loaded asyncronously, you should have a loading state.
 
 
@@ -81,12 +81,24 @@ setInterval(drawLoop,1000/24);
 
 
 let spr;
-const testSprites = async () => {
-  spr = await gfx.loadAtlas('tileset_1_1.png', 16, 2, 1, 1, 1, 1);
-  loaded = true;
-  console.log('test done...');
+const loader = async () => {
+  try{
+    spr = await gfx.loadAtlas('tileset_1_1.png', 16, 2, 1, 1, 1, 1);
+    const vShader = await layer3.vShader('./vsData.txt');
+    if(vShader){
+      const fShader = await layer3.fShader('./fsData.txt');
+      if(fShader){
+        const program = layer3.newProgram(vShader,fShader);
+        layer3.useProgram(program);
+        loaded = true;
+      }
+    }
+  }
+  catch(err){
+    console.log('error:' , err)
+  }
 }
-testSprites();
+loader();
 
 
 

@@ -152,7 +152,66 @@ const loadAtlas = async(url, res, scale = 1, ox = 0, oy = 0, hGap = 0, vGap = 0)
 
 // shader buffer
 
-const sBuffer = ()=>{}
+const sBuffer = ()=>{
+  const bCanv = document.createElement('canvas');
+  bCanv.width = 640;
+  bCanv.height = 360;
+  const bGl = bCanv.getContext('webgl');
+
+  const vBuffer = bGl.createBuffer();
+  bGl.bindBuffer(bGl.ARRAY_BUFFER, vBuffer);
+  
+  return {
+    vShader: async (vsTxt)=>{
+      try{
+        const vRes = await fetch(vsTxt);
+        if(vRes.ok){
+          const vData = await vRes.text();
+          const vShader = bGl.createShader(bGl.VERTEX_SHADER);
+          bGl.shaderSource(vShader, vData);
+          bGl.compileShader(vShader);
+          return vShader;
+        }else{
+          console.log('failed to fetch vertex shader');
+        }
+      }
+      catch(err){
+        console.log('error: ', err);
+      }
+      return false;
+    },
+    fShader: async (fsTxt)=>{
+      try{
+        const fRes = await fetch(fsTxt);
+        if(fRes.ok){
+          const fData = await fRes.text();
+          const fShader = bGl.createShader(bGl.FRAGMENT_SHADER);
+          bGl.shaderSource(fShader, fData);
+          bGl.compileShader(fShader);
+          return fShader;
+        }else{
+          console.log('failed to fetch fragment shader');
+        }
+      }
+      catch(err){
+        console.log('error: ', err);
+      }
+      return false;
+    },
+    newProgram: (vShader,fShader)=>{
+      const program = bGl.createProgram();
+      bGl.attachShader(program,vShader);
+      bGl.attachShader(program,fShader);
+      bGl.linkProgram(program);
+    },
+    useProgram: (p)=>{
+      bGl.useProgram(p);
+    },
+    vertexBuffer: (data)=>{
+      bGl.bufferData(bGl.ARRAY_BUFFER, data, bGl.STATIC_DRAW);
+    }
+  }
+}
 
 
 // main canvas methods
