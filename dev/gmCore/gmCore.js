@@ -111,7 +111,7 @@ const tpStartEvt = (e)=>{
   }
   _pad[0].btn[3] = 255;
   if(pLock){
-    tLockArr.set([x, y]);
+    tLockArr.set([x,y],2);
     return;
   }
   _pad[0].axis.set([x, y], 2);
@@ -136,8 +136,12 @@ const tpMoveEvt = (e)=>{
     }
     return;
   }
-  _pad[0].axis.set([(tX(e) - tLockArr[0]) * 2, (tY(e) - tLockArr[1]) * 2], 2);
-  tLockArr.set([tX(e),tY(e)],2);
+  if(pLock){
+    _pad[0].axis.set([(tX(e) - tLockArr[0]) * 2, (tY(e) - tLockArr[1]) * 2], 2);
+    tLockArr.set([tX(e),tY(e)],2);
+    return;
+  }
+  _pad[0].axis.set([tX(e), tY(e), tX(e), tY(e)]);
 }
 const tpEndEvt = (e)=>{
   if (e.cancelable) e.preventDefault();
