@@ -21,11 +21,11 @@ export const _pad = [];
 for(let i = 0; i < 5; i++)_pad.push(new Pad);
 const padPulse = [];
 
-// pointer
+// pointer //////////////////////////////////////////////////////////
 let pTarget;
-let pLock = true;
+let pLock = false;
 
-// mouse controls
+// mouse controls ///////////////////////////////////////////////////
 const mLockArr = new Float32Array(2);
 const noDefault = (e)=> e.preventDefault();
 const mouseDwnEvt = (e)=>{
@@ -64,7 +64,7 @@ const mouseLockEvt = ()=>{
   pTarget.requestPointerLock();
 }
 
-// touch controls
+// touch controls ///////////////////////////////////////////////////
 const tLockArr = new Float32Array(4);
 const tX = (e)=> (e.changedTouches[0].pageX - pTarget.offsetLeft) / pTarget.offsetWidth * 2 - 1;
 const tY = (e)=> 1 - (e.changedTouches[0].pageY - pTarget.offsetTop) / pTarget.offsetHeight * 2;
@@ -111,7 +111,7 @@ const tpStartEvt = (e)=>{
   }
   _pad[0].btn[3] = 255;
   if(pLock){
-    tLockArr.set([x,y],2);
+    tLockArr.set([x,y,x,y]);
     return;
   }
   _pad[0].axis.set([x, y], 2);
@@ -177,7 +177,18 @@ const tpEndEvt = (e)=>{
   _pad[0].btn[3] = 0;
 }
 
-// target manager
+// keyboard /////////////////////////////////////////////////////////
+const kbConf = {
+
+}
+const kDwnEvt = (e)=>{
+  console.log(e);
+}
+
+// keyboard /////////////////////////////////////////////////////////
+const kUpEvt = (e)=>{}
+
+// target manager ///////////////////////////////////////////////////
 const pLockChangeEvt = ()=>{
   if(document.pointerLockElement){
     pTarget.removeEventListener('mousewheel', mouseWheelEvt);
@@ -194,10 +205,11 @@ const newPTarget = (a)=>{
     pTarget.removeEventListener('mousemove', mouseMoveEvt);
     pTarget.removeEventListener('contextmenu', noDefault);
     pTarget.removeEventListener('mousedown', mouseDwnEvt);
-    pTarget.removeEventListener('touchstart', tpStartEvt, {cancelable:true});
+    pTarget.removeEventListener('touchstart', tpStartEvt);
     pTarget.removeEventListener('touchmove', tpMoveEvt);
-    pTarget.removeEventListener('touchend', tpEndEvt, {cancelable:true});
-    pTarget.removeEventListener('touchcancel', tpEndEvt, {cancelable:true});
+    pTarget.removeEventListener('touchend', tpEndEvt);
+    pTarget.removeEventListener('touchcancel', tpEndEvt);
+    window.removeEventListener('keydown', kDwnEvt);
   }
   pTarget = a;
   pLockChangeEvt();
@@ -205,20 +217,28 @@ const newPTarget = (a)=>{
   a.addEventListener('mousemove', mouseMoveEvt);
   a.addEventListener('contextmenu', noDefault);
   a.addEventListener('mousedown', mouseDwnEvt);
-  a.addEventListener('touchstart', tpStartEvt, {cancelable:true});
+  a.addEventListener('touchstart', tpStartEvt);
   a.addEventListener('touchmove', tpMoveEvt);
-  a.addEventListener('touchend', tpEndEvt, {cancelable:true});
-  a.addEventListener('touchcancel', tpEndEvt, {cancelable:true});
+  a.addEventListener('touchend', tpEndEvt);
+  a.addEventListener('touchcancel', tpEndEvt);
+  window.addEventListener('keydown', kDwnEvt);
 }
 window.addEventListener('mouseup', mouseUpEvt);
 document.addEventListener('pointerlockchange', pLockChangeEvt);
 
 
-// update
+// update ///////////////////////////////////////////////////////////
 const gpUpdate = ()=>{
+  // pad pulse
   for(let i = padPulse.length; i > 0; i--){
     const p = padPulse.pop();
     _pad[p[0]].btn[p[1]] = 0;
+  }
+  // pointer lock
+  if(pLock){
+    mLockArr.set([0, 0]);
+    tLockArr.set([tLockArr[2],tLockArr[3]]);
+    _pad[0].axis.set([0, 0], 2);
   }
 }
 
@@ -231,11 +251,6 @@ const flow = ()=>{
   while(timer[0] < timer[2]){
     _loop.update();
     gpUpdate();
-    if(pLock){
-      mLockArr.set([0, 0]);
-      tLockArr.set([tLockArr[2],tLockArr[3]]);
-      _pad[0].axis.set([0, 0], 2);
-    }
     timer[0] += delay[0];
   }
   if(timer[1] < timer[2]){
