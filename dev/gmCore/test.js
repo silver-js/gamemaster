@@ -4,7 +4,7 @@ const canv = document.getElementById('game');
 const ctx = canv.getContext('2d');
 
 _cfg.pointerTarget(canv);
-_cfg.setClock(10);
+_cfg.setClock(60);
 
 //_cfg.tpAdd(-1,-.5,.8,.5,'btn',4);
 //_cfg.tpRemove(-1,-.5);
@@ -66,8 +66,8 @@ let pointerY = 0;
 
 _loop.update = ()=>{
   hue = (hue + 5) % 360;
-  pointerX += _pad[0].axis[2]*32;
-  pointerY += _pad[0].axis[3]*32;
+  pointerX = Math.min(640,Math.max((pointerX + _pad[0].axis[2]*32), 0));
+  pointerY = Math.min(360,Math.max((pointerY + _pad[0].axis[3]*32), 0));
   if(_pad[0].btn[4]){
     _cfg.pointerLock(true);
   }
@@ -100,9 +100,9 @@ _loop.draw = ()=>{
   ctx.strokeRect(.2*320+320,.5*-180+180,.8*320,.5*-180);
   ctx.strokeRect(-1*320+320,-1*-180+180,1*320,1*-180);
   ctx.strokeRect(0*320+320,-1*-180+180,1*320,1*-180);
-  drawCircle(pointerX+156,pointerY+92,24,'#f008');
+  drawCircle(pointerX,pointerY,24,'#f008');
 }
 
 _cfg.kbAdd({key: 'KeyY', map: [2, 'btn', 3]});
-_cfg.kbRemove('KeyW','KeyJ');
+//_cfg.kbRemove('KeyW','KeyJ');
 console.log(_cfg.getKbMap());
