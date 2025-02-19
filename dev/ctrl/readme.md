@@ -1,46 +1,71 @@
-# Module under development / design, not yet usable
+# Ctrl Module
+
+## usage:
+```
+import {_pad, _padUpdate, _padCfg} from './ctrl_min.js';
+
+
+```
+
+## how it works:
+  * _pad is an array with virtual pads from 0 to 4.
+  * each virtual pad is an object with 4 axis and 8 buttons.
+  * _pad[0] is for touch/mouse controls.
+  * touch controls work with different areas that you can define and toggle.
+  * _pad[1] to _pad[4] is for standard controls, can be keyboard or gamepad.
+  * Gamepads connect automatically to the first available pad, to switch between pads just press start + select.
 
 ## general controls:  
 
-* each jX is a 4axis 8buttons
-
-* j0 is for touch, mouse controls and fixed buttons that are expected to work, like "esc" to exit, and "enter" for start
-* j1 to j4 is for standard controls, can be keyboard or gamepad
-
-touch controls work with diferent areas that you can define and toggle.
 usage:
--> j0
+-> pad[0]
   * mouse:
-      j0.btn(1) => left-click
-      j0.btn(2) => right-click
-      j0.btn(3) => middle-click
+    ```
+      _pad[0].btn[0]    // left-click
+      _pad[0].btn[1]    // right-click
+      _pad[0].btn[2]    // middle-click
+    ```
 
   * touch:
-      j0.btn(4) => touchstart to touchend
+    ```
+      _pad[0].btn[3]    // touchstart to touchend
+    ```
 
+  * shared methods:
+    ```
+      _padCfg.pointerTarget(canv);    // set the element that recieves pointer interactions.
+
+      _padCfg.pointerLock(true);      // enables/disables pointerLock.
+      
+    ```
   * touch methods:
-      j0.setArea(
-        x, y, radius, type, [mappings]
+    ```
+      _padCfg.tpAdd(  // adds a specific touch area to interact as a button or axis on _pad[0].
+        -1, -1, 1, 1, // x, y, w, h, from -1, -1(top left) to 1, 1(bottom right).
+        'btn',        // type, can be "swipe", "btn" or "stick".
+        0,            // mapping, specify which button/axis interacts with this area.
+        -1            // you can add a secondary button pulse for tapping action on any area.
       );
-      j0.removeArea(x,y);
+      
+      _padCfg.tpRemove(-1,-1);        // removes a touch area, just needs x,y coordinates.
+
+    ```
 
   * touch/mouse shared:
-      j0.btn(0) => click event;
-      j0.axis(0-1) =>
-        event position/movement
-      j0.axis(3) =>  wheel/zoom-gesture
+    ```
+        _pad[0].axis[2] && _pad[0].axis[3]
+        // if pointerLock, tracks movement, refreshes with _padUpdate().
+        // if !pointerLock, tracks position.
+    ```
 
-  * touch/mouse methods:
-      j0.mode(0-1) =>
-          0 track position
-          1 track movement(mouse lock)
+  * kb methods:
+    ```
+      _padCfg.getKbMap();  // returns keyboard mappings.
 
-  * kb:
-      j0.btn(5) => Tab
-      j0.btn(6) => Enter
-  
-      - Esc to exit mouse lock
+      _padCfg.kbAdd(                        // adds new key mappings
+        {key: 'KeyG', map: [2, 'btn', 2]},
+        {key: 'KeyP', map: [2, 'btn', 1]}
+      );
 
--> j1-j4
-      jx.btn(0-7) => returns boolean
-      jx.axis(0-3) => returns int8
+      _padCfg.kbRemove('Space', 'Tab');   // removes key mappings
+    ```
