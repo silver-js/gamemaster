@@ -4,6 +4,7 @@ This module manages the game loops, there are only a few options and functions.
 
 ## Usage:
 
+```
 import cpu from './cpu_min.js';
 
 cpu.setFps(60);     // sets how many draw calls per second, default is 30.
@@ -19,3 +20,4 @@ cpu.update = ()=>{
     here goes your update call.
   */
 }
+```
