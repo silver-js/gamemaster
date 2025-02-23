@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="css/style.css" rel="stylesheet">
+    <script type="module" src="editor.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>GM Editor</h1>
+      <nav>
+        <ul>
+          <li>Load Project</li>
+          <li>Save Project</li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <section id="game-data">
+        <h4 id="game-h">No game</h4>
+        <ul>
+          <li>Play</li>
+          <li>Stop</li>
+        </ul>
+      </section>
+      <section id="tool-selector">
+        <ul>
+          <li>
+            <label for="code-select">Code</label>
+          </li>
+          <li>
+            <label for="map-select">Maps</label>
+          </li>
+          <li>
+            <label for="gfx-select">GFX</label>
+          </li>
+          <li>
+            <label for="sfx-select">SFX</label>
+          </li>
+        </ul>
+      </section>
+      <section id="editor-wrapper">
+        <input class="hidden" id="code-select" type="radio" name="editor-select" checked="true">
+        <article id="editor-code">
+          -- here goes the game code editor --
+        </article>
+        <input class="hidden" id="map-select" type="radio" name="editor-select">
+        <article id="editor-map">
+          -- here goes the game map editor --
+        </article>
+        
+        <input class="hidden" id="gfx-select" type="radio" name="editor-select">
+        <article id="editor-gfx">
+          -- here goes the game gfx editor --
+        </article>
+        <input class="hidden" id="sfx-select" type="radio" name="editor-select">
+        <article id="editor-sfx">
+          -- here goes the game sfx editor --
+        </article>
+      </section>
+      <section id="game-wrapper">
+        <iframe id="game-iframe">
+          -- here goes the game tester --
+        </iframe>
+      </section>
+    </main>
+    <footer>
+      silverjs.com
+    </footer>
+  </body>
+</html>
