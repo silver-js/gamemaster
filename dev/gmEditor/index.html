@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/tokyo-night-dark.min.css" rel="stylesheet">
+    <script src="highlight.min.js"></script>
     <script type="module" src="editor.js"></script>
   </head>
-  <body>
-    <header>
+  <body class="flex-column">
+    <header class="flex-between">
       <h1>GM Editor</h1>
       <nav>
         <ul>
@@ -17,12 +19,12 @@
         </ul>
       </nav>
     </header>
-    <main>
-      <section id="game-data">
-        <h4 id="game-h">No game</h4>
+    <main class="flex-column grow">
+      <section class="flex-between" id="game-data">
+        <h4 id="game-title">No game</h4>
         <button id="play-stop-btn">&#9658 Play</button>
       </section>
-      <section id="editor-wrapper">
+      <section class="flex-column grow" id="editor-wrapper">
           <ul id="tool-selector">
             <li>
               <label for="code-select">Code</label>
@@ -40,10 +42,14 @@
         <input class="hidden" id="code-select" type="radio" name="editor-select" checked="true">
         <article id="editor-code">
           <div id="editor-code-container">
-            <ul>
+            <ul id="pages-list">
+              <li class="selected">1</li>
               <li>+</li>
             </ul>
-              <textarea></textarea>
+            <div class="grow" id="code-area">
+                <pre><code></code></pre>
+                <textarea spellcheck=false value="\n"></textarea>
+            </div>
           </div>
         </article>
         <input class="hidden" id="map-select" type="radio" name="editor-select">
@@ -59,7 +65,7 @@
           -- here goes the game sfx editor --
         </article>
       </section>
-      <section id="game-wrapper">
+      <section class="hidden grow" id="game-wrapper">
         <iframe id="game-iframe"></iframe>
       </section>
     </main>
@@ -70,4 +76,25 @@
       silverjs.com
     </footer>
   </body>
+  <!--
+    <link rel="stylesheet" href="tokyo-night-dark.min.css">
+    <style>
+    </style>
+</head>
+<body>
+    hello world
+    <div id="editor">
+
+
+  
+    <pre>
+        <code class="language-javascript"></code>
+    </pre>
+    <textarea></textarea>
+</div>
+</body>
+</html>
+  -->
+  <script>
+  </script>
 </html>
