@@ -16,6 +16,10 @@ ul{
   list-style: none;
   text-align: center;
 }
+
+
+/* -- Custom classes -- */
+
 .flex-column{
   display: flex;
   flex-direction: column;
@@ -31,6 +35,19 @@ ul{
 .selected{
   color: #133;
   background: #3aa;
+}
+.btn-list li{
+  box-shadow: 1px 1px 1px #333, -1px -1px 1px #ddd;
+  gap: .5em;
+  padding: 0 .5em;
+  transition: .15s;
+}
+.btn-list li:hover{
+  background: #0aa;
+}
+.btn-list.flex-between{
+  gap: .5em;
+  align-items: center;
 }
 
 /*  body  */
@@ -56,27 +73,32 @@ header h1{
   color: #010;
   text-shadow: 1px 1px #999, -1px -1px #999;
 }
-header nav ul{
+header nav{
+  box-shadow: 0 0 2px #bbb;
+  padding: .2em .4em;
   display: flex;
-  gap: 1rem;
+  gap: 1em;
 }
 
 /*  main  */
 main{
   margin: 0 1rem;
 }
-#game-data ul{
-  display: flex;
+#game-data{
+  padding: .2em;
+}
+#game-data button{
+  box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
+  padding: 0 .5em;
+  color: #ddd;
+  background: none;
+  border: none;
 }
 #tool-selector{
-  list-style: none;
-  display: flex;
-  justify-content: space-evenly;
   padding: .5rem 0;
 }
 #tool-selector li{
-  box-shadow: 1px 1px 2px 2px #999;
-  width: 10rem;
+  flex-grow: 100;
 }
 #tool-selector li label{
   display: block;
@@ -108,16 +130,12 @@ main{
 }
 #editor-code ul{
   overflow: scroll;
-  width: 2em;
+  width: 2.5em;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
 #editor-code ul::-webkit-scrollbar {
   display: none;
-}
-#editor-code ul li{
-  border: 1px solid #333;
-  padding: .2em;
 }
 #code-area textarea{
   tab-size: 2;
@@ -125,17 +143,17 @@ main{
   font-family: monospace;
   font-size: 1em;
   white-space: pre;
-  left: 5.45em;
+  left: 6.05em;
   top: 1.3em;
   outline: none;
   resize: none;
   color:#0000;
   caret-color: #f0932b;
   background: none;
-  width:calc(100% - 5.45em);
+  width:calc(100% - 6.05em);
   height: calc(100% - 1.3em);
 }
-  #code-area textarea, #code-area pre{
+#code-area textarea, #code-area pre{
   position: absolute;
 }
 #code-area pre{

@@ -13,9 +13,11 @@
     <header class="flex-between">
       <h1>GM Editor</h1>
       <nav>
-        <ul>
-          <li>Load Project</li>
-          <li>Save Project</li>
+        <h3>Project:</h3>
+        <ul class="btn-list flex-between">
+          <li id="project-new-btn">New</li>
+          <li>Load</li>
+          <li>Save</li>
         </ul>
       </nav>
     </header>
@@ -25,7 +27,7 @@
         <button id="play-stop-btn">&#9658 Play</button>
       </section>
       <section class="flex-column grow" id="editor-wrapper">
-          <ul id="tool-selector">
+          <ul class="btn-list flex-between" id="tool-selector">
             <li>
               <label for="code-select">Code</label>
             </li>
@@ -42,7 +44,7 @@
         <input class="hidden" id="code-select" type="radio" name="editor-select" checked="true">
         <article id="editor-code">
           <div id="editor-code-container">
-            <ul id="pages-list">
+            <ul class="btn-list" id="pages-list">
               <li class="selected">1</li>
               <li>+</li>
             </ul>

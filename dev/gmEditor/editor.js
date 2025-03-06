@@ -1,5 +1,6 @@
 //// <-- Init --> ////
-import {db} from './idbManager.js';
+import {db, dbUpdateData, dbUpdateRom, dbDeleteEntry} from './idbManager.js';
+const codeLineOffset = 10;
 
 
 //// <-- DOM --> ////
@@ -24,22 +25,22 @@ domTitle.addEventListener('click', ()=>{
   const author = prompt('Author Name: ', db.rom.author);
   if(author && author != db.rom.author){
     db.rom.author = author;
-    putData('game_data', {key: 'author', value: author});
+    dbUpdateData('author');
   }
   const name = prompt('Project Name: ', db.rom.name);
   if(name && name != db.rom.name){
     db.rom.name = name;
-    putData('game_data', {key: 'name', value: name});
+    dbUpdateData('name');
   }
   const version = prompt('Version: ', db.rom.version);
-  if(version && version != rom.version){
+  if(version && version != db.rom.version){
     db.rom.version = version;
-    putData('game_data', {key: 'version', value: version});
+    dbUpdateData('version');
   }
-  ipdateTitle();
+  updateData();
 });
 
-const updateTitle = ()=>{
+const updateData = ()=>{
   domTitle.innerText = `${db.rom.name} v${db.rom.version}`;
 }
 
@@ -65,9 +66,11 @@ const renderCode = (e)=>{
     });
     e.target.value = preStr + padding + e.target.value.slice(cPoint);
   }
-  let i = codeLine;
-  domCodePre.innerHTML = `<code class="language-javascript">\n/*${(i++).toString().padStart(3,"0")}*/ ${domCodeText.value.replace(
-    /\n/g, ()=>`\n/*${(i++).toString().padStart(3,"0")}*/ `
+    db.rom.code[codePage] = domCodeText.value;
+    dbUpdateRom('code', codePage);
+  let i = codeLine + 1;
+  domCodePre.innerHTML = `<code class="language-javascript">\n/*${(i++).toString().padStart(4," ")}*/ ${domCodeText.value.replace(
+    /\n/g, ()=>`\n/*${(i++).toString().padStart(4," ")}*/ `
     )}</code>`;
   hljs.highlightAll();
   codeScroll();
@@ -85,84 +88,71 @@ domCodeText.addEventListener('keydown', e=>{
 });
 domCodeText.addEventListener('scroll', codeScroll);
 
-
-domCodePages.addEventListener('click', e =>{
-  const val = e.target.value;
+const switchPage = (val)=>{
   if(val >= 0){
-    document.querySelector('#pages-list .selected').classList.remove('selected');
-    e.target.classList.add('selected');
-    codePage = e.target.value;
-    const prevCodeStr = db.rom.code.slice(0,codePage).join('\n');
-    codeLine = (prevCodeStr.match('\n') || '').length + 1;
+    const lastPage = document.querySelector('#pages-list .selected');
+    if(lastPage){
+      lastPage.classList.remove('selected');
+    }
+    const nextPage = document.querySelector(`#pages-list li[value="${val}"]`);
+    if(nextPage){
+      nextPage.classList.add('selected');
+    }
+    codePage = val;
+    codeLine = codePage ? db.rom.code.slice(0,codePage).join('\n').split('\n').length + codeLineOffset: codeLineOffset;
     domCodeText.value = db.rom.code[codePage];
     renderCode();
   }else if(val == -1){
     db.rom.code.push('');
     loadCode();
+    switchPage(db.rom.code.length - 1)
   }
+  domCodeText.focus();
+}
+domCodePages.addEventListener('click', e =>{
+  switchPage(e.target.value);
 });
 domCodePages.addEventListener('contextmenu', e =>{
   e.preventDefault();
   const p = e.target.value;
   if(p >= 0 && db.rom.code.length > 1 && confirm(`Delete page ${p+1}?`)){
     db.rom.code.splice(p,1);
+    for(let i = p; i < db.rom.code.length; i++){
+      dbUpdateRom('code', i);
+    }
+    dbDeleteEntry('code', db.rom.code.length);
     loadCode();
+    switchPage(codePage < p ? codePage : codePage - 1);
   }
 });
 
-const updateCode = ()=>{
-  domCodeText.value = 'aslkdjasdlkjasdlk';
-  renderCode();
-}
 const loadCode = ()=>{
-  codePage = 0;
   domCodePages.innerHTML = '';
   db.rom.code.forEach((n, i)=>{
     domCodePages.innerHTML += `<li${i == 0 ? ' class = "selected"' : ''} value=${i}>${i+1}</li>`
   });
   domCodePages.innerHTML += '<li value=-1>+</li>';
-  domCodeText.value = db.rom.code[0];
-  renderCode();
 }
-
-
-
-
-
-
-
-
-
-
 
 db.onload = ()=>{
-  updateTitle();
+  updateData();
   loadCode();
+  switchPage(0);
 }
 
 
-const pageClick = (e)=>{
-  console.log(e.data);
-}
-const updateCodePages = ()=>{
-  domPages.innerHTML = '';
-  rom.code.forEach((n, i)=>{
-    const ele = document.createElement('li');
-    ele.data = i;
-    ele.innerText = i + 1;
-    domPages.appendChild(ele);
-
-
-  });
-}
-
-// title data
-
-// code update / highlight
-
+// project menu
+document.getElementById('project-new-btn').addEventListener('click', e=>{
+  const ok = confirm('Create new project?\n All unsaved data will be lost!')
+  if(ok){
+    window.indexedDB.deleteDatabase('rom');
+    location.reload();
+  }
+});
 
 
 // ux
+
 let playState = false;
 const playPause = ()=>{
   playState = !playState;
