@@ -1,6 +1,7 @@
 //// <-- Init --> ////
 import {db, dbUpdateData, dbUpdateRom, dbDeleteEntry} from './idbManager.js';
-const codeLineOffset = 10;
+import {playRom, stopRom} from './romPlayer.js';
+const codeLineOffset = 7;
 
 
 //// <-- DOM --> ////
@@ -69,8 +70,8 @@ const renderCode = (e)=>{
     db.rom.code[codePage] = domCodeText.value;
     dbUpdateRom('code', codePage);
   let i = codeLine + 1;
-  domCodePre.innerHTML = `<code class="language-javascript">\n/*${(i++).toString().padStart(4," ")}*/ ${domCodeText.value.replace(
-    /\n/g, ()=>`\n/*${(i++).toString().padStart(4," ")}*/ `
+  domCodePre.innerHTML = `<code class="language-javascript">\n/*${(i++).toString().padStart(5," ")}*/ ${domCodeText.value.replace(
+    /\n/g, ()=>`\n/*${(i++).toString().padStart(5," ")}*/ `
     )}</code>`;
   hljs.highlightAll();
   codeScroll();
@@ -149,6 +150,50 @@ document.getElementById('project-new-btn').addEventListener('click', e=>{
     location.reload();
   }
 });
+document.getElementById('project-save-btn').addEventListener('click', e=>{
+  const romJson = JSON.stringify(db.rom);
+  
+  const link = document.createElement('a');
+  const file = new Blob([romJson], {type: 'text/plain'});
+  link.href = URL.createObjectURL(file);
+  link.download = `${db.rom.name} v${db.rom.version}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
+document.getElementById('project-load-btn').addEventListener('click', e=>{
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.onchange = (e)=>{
+    try{
+      const file = e.target.files[0];
+
+      const reader = new FileReader();
+      reader.readAsText(file,'UTF-8');
+      // here we tell the reader what to do when it's done reading...
+      reader.onload = readerEvent => {
+        try{
+          var content = readerEvent.target.result; // this is the content!
+          const loadedRom = JSON.parse(content);
+          if(Array.isArray(loadedRom.code) && Array.isArray(loadedRom.maps) && Array.isArray(loadedRom.gfx) && Array.isArray(loadedRom.sfx)){
+            db.rom = loadedRom;
+            db.onload();
+            return
+          }
+          alert('Invalid ROM data!');
+
+        }
+        catch(err2){
+          alert('Invalid ROM File!');
+          console.log(err2)
+        }
+      }
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
+  input.click();
+})
 
 
 // ux
@@ -159,6 +204,11 @@ const playPause = ()=>{
   domPlayStop.innerHTML = playState?'&#x23f9 Stop':'&#9658 Play';
   domEditor.style.display = playState?'none':'flex';
   domGame.style.display = playState?'flex':'none';
+  if(playState){
+    playRom(db.rom);
+    return
+  }
+  stopRom()
 }
 domPlayStop.addEventListener('click',playPause);
 

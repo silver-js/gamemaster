@@ -1,0 +1,21 @@
+//////////////////////////
+// Variable declaration //
+//////////////////////////
+
+const x = 0;            // const variables are immutable
+const y = "test";
+
+let myVariable = 128;   // let variables can change value and type
+
+
+/////////////
+// Objects //
+/////////////
+
+const user = {
+  age: 25,
+  height: 172,
+  weight: 75
+}
+
+console.log(user.weight);   // => 75

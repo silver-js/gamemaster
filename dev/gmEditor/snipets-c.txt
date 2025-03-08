@@ -1,0 +1,48 @@
+/////////////////////
+// Graphics Module //
+//     Basics      //
+/////////////////////
+
+// The graphics module works with as many layers as you need:
+
+const myLayer = gfx.iBuffer();   // creates a new layer to work with
+/*
+  draw some stuff here:
+*/
+gfx.clear()       // clears the main canvas
+myLayer.draw()    // draws this layer on the main canvas
+
+// if you have multiple layers,
+// the best option is to create a simple graphics pipeline:
+
+const drawPipeline = ()=>{
+  gfx.clear();
+  backgroundLayer.draw();
+  mainLayerA.draw();
+  mainLayerB.draw();
+  foregroundLayer.draw();
+  uiLayer.draw();
+}
+
+///////////////////
+// Layer Methods //
+///////////////////
+
+myLayer.clear()                           // clears the layer canvas
+
+myLayer.color('#f0f')                     // changes the fill color
+myLayer.lineColor('#f0f')                 // changes the line color
+
+myLayer.font('32px courier');             // chante text font
+myLayer.textAlign('left');                // text alignment, ('center' | 'left' | 'right')
+myLayer.text('this  some text', 320,32);  // filled text, ('text', x, y)
+myLayer.lineText('other text', 100, 10);  // text outline
+
+myLayer.arc(100, 100, 50, 0, 360)         // draws an arc, (x, y, width, startAngle, endAngle)
+myLayer.lineArc(100, 200, 80, 0, 90)      // draws a line arc
+
+myLayer.rect(10, 10, 40, 40)              // draws a rectangle, (x, y, width, height)
+myLayer.lineRect(10, 10, 40, 40)          // draws a line rectangle
+
+myLayer.figure(x1, y1, x2, y2...)         // draws a figure
+myLayer.lines(x1, y1, x2, y2...)          // draws a set of continuous lines

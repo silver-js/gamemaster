@@ -11,13 +11,13 @@
   </head>
   <body class="flex-column">
     <header class="flex-between">
-      <h1>GM Editor</h1>
+      <h1><label for="modal-main-menu">GM Editor</label></h1>
       <nav>
         <h3>Project:</h3>
         <ul class="btn-list flex-between">
           <li id="project-new-btn">New</li>
-          <li>Load</li>
-          <li>Save</li>
+          <li id="project-load-btn">Load</li>
+          <li id="project-save-btn">Save</li>
         </ul>
       </nav>
     </header>
@@ -71,32 +71,42 @@
         <iframe id="game-iframe"></iframe>
       </section>
     </main>
-    <aside>
-      
+    <input class="hidden" type="checkbox" id="modal-main-menu"/>
+    <aside class="hidden">
+      <ul class="btn-list flex-between">
+        <li><label for="menu-select-sheet">Cheatsheet</label></li>
+        <li><label for="menu-select-cfg">Config</label></li>
+        <li><label for="modal-main-menu">Close</label></li>
+      </ul>
+      <input class="hidden mnu-select" id="menu-select-sheet" type="radio" name="menu-select" checked="true">
+      <div class="sub-menu">
+        <pre id="cheatsheet-snipets-a"></pre>
+      </div>
+      <input class="hidden mnu-select" id="menu-select-cfg" type="radio" name="menu-select">
+      <div class="sub-menu">
+        here goes the config
+      </div>
     </aside>
     <footer>
       silverjs.com
     </footer>
   </body>
-  <!--
-    <link rel="stylesheet" href="tokyo-night-dark.min.css">
-    <style>
-    </style>
-</head>
-<body>
-    hello world
-    <div id="editor">
-
-
-  
-    <pre>
-        <code class="language-javascript"></code>
-    </pre>
-    <textarea></textarea>
-</div>
-</body>
-</html>
-  -->
   <script>
+    const getSnipets = async ()=>{
+      let str = '';
+      const domSnipets = document.getElementById('cheatsheet-snipets-a');
+      const resA = await fetch('./snipets-a.txt');
+      const dataA = await resA.text();
+      str += dataA;
+      const resB = await fetch('./snipets-b.txt');
+      const dataB = await resB.text();
+      str += dataB;
+      const resC = await fetch('./snipets-c.txt');
+      const dataC = await resC.text();
+      str += dataC;
+
+      domSnipets.innerHTML = hljs.highlight(str, {language: 'javascript'}).value
+    }
+    getSnipets();
   </script>
 </html>

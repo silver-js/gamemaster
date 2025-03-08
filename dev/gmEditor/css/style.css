@@ -143,14 +143,14 @@ main{
   font-family: monospace;
   font-size: 1em;
   white-space: pre;
-  left: 6.05em;
+  left: 6.7em;
   top: 1.3em;
   outline: none;
   resize: none;
   color:#0000;
   caret-color: #f0932b;
   background: none;
-  width:calc(100% - 6.05em);
+  width:calc(100% - 6.7em);
   height: calc(100% - 1.3em);
 }
 #code-area textarea, #code-area pre{
@@ -176,6 +176,33 @@ main{
 }
 
 /*  other  */
+aside{
+  animation: popanim .3s;
+  display: none;
+  position: fixed;
+  inset: .5em;
+  padding: .5em;
+  background: #011;
+}
+#modal-main-menu{
+  display: none;
+}
+#modal-main-menu:checked + aside{
+  display: flex;
+  flex-direction: column;
+  gap: .5em;
+}
+.sub-menu{
+  display: none;
+  flex-grow: 100;
+  height: 50vh;
+  overflow: scroll;
+}
+.mnu-select:checked + .sub-menu{
+  display: block;
+  animation: popanim .3s;
+}
+
 footer{
   text-align: center;
 }
