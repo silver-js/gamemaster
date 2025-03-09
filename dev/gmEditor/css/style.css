@@ -20,6 +20,12 @@ ul{
 
 /* -- Custom classes -- */
 
+.big{
+  width: 100%;
+}
+.tall{
+  height: 100%;
+}
 .flex-column{
   display: flex;
   flex-direction: column;
@@ -168,6 +174,61 @@ main{
   height: 100%;
   tab-size: 2;
 }
+
+/* gfx tab */
+#editor-gfx{
+  height: 50vh;
+}
+#editor-gfx div.wrapper{
+  height: 100%;
+}
+#gfx-list{
+  width: 20vmin;
+  overflow-y: scroll;
+}
+#gfx-list li{
+  margin: .5em;
+  padding: .5em;
+  box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
+  word-break: break-all;
+  font-size: .6em;
+}
+#gfx-list li img{
+  display: block;
+  width: 100%;
+}
+#editor-gfx h4{
+  text-align: center;
+}
+#editor-gfx p{
+  text-align: center;
+  box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
+  margin: .5em;
+}
+#gfx-conf ul{
+  width: 45%;
+}
+#gfx-conf-l{
+  text-align: right;
+}
+#gfx-conf-r{
+  text-align: left;
+}
+#gfx-conf input{
+  width: 5em;
+  margin-right: 1em;
+}
+#editor-gfx div.grow{
+    overflow-y: scroll;
+    height: 100%;
+}
+#editor-gfx canvas{
+  width: 95%;
+  display: block;
+  margin: 1em auto;
+  background: #f0f;
+}
+
 /* game iframe */
 #game-wrapper iframe{
   height: 100%;
@@ -198,9 +259,15 @@ aside{
   height: 50vh;
   overflow: scroll;
 }
-.mnu-select:checked + .sub-menu{
+.mnu-select:checked + .sub-menu, .mnu-cheatsheet:checked + pre{
   display: block;
   animation: popanim .3s;
+}
+aside pre{
+  display: none;
+}
+.mnu-cheatsheet{
+  display: none;
 }
 
 footer{

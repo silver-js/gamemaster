@@ -1,15 +1,20 @@
 //// <-- init --> ////
-export const db  = {
+window.db  = {
   rom:{
     name: 'Loading...',
     author: 'Awaiting database',
     version: 'x.x',
     code: [''],
     maps: [],
-    gfx: [],
+    gfx: {},
     sfx: [],
   },
-  onload: ()=>{}
+  loaderFunctions: [],
+  onload: function(){
+    this.loaderFunctions.forEach(n=>{
+      n();
+    })
+  }
 };
 
 let idb = null;
@@ -81,13 +86,13 @@ dbRequest.onerror = e=>{
 
 // <-- Data Update --> //
 
-export const dbUpdateData = (k)=>{
+db.updateData = (k)=>{
   putData('game_data', {key: k, value: db.rom[k]});
   console.log(k, db.rom[k])
 }
-export const dbUpdateRom = (list, id)=>{
+db.updateRom = (list, id)=>{
   putData(list, {id, value: db.rom[list][id]});
 }
-export const dbDeleteEntry = (list, id)=>{
+db.deleteEntry = (list, id)=>{
   deleteData(list, id);
 }

@@ -1,4 +1,22 @@
-const lineOffset = 7;
+// init
+let playState = false;
+const domPlayStop = document.getElementById('play-stop-btn');
+const domEditor = document.getElementById('editor-wrapper');
+const domGame = document.getElementById('game-wrapper');
+
+const playPause = ()=>{
+  playState = !playState;
+  domPlayStop.innerHTML = playState?'&#x23f9 Stop':'&#9658 Play';
+  domEditor.style.display = playState?'none':'flex';
+  domGame.style.display = playState?'flex':'none';
+  if(playState){
+    playRom(db.rom);
+    return
+  }
+  stopRom()
+}
+domPlayStop.addEventListener('click',playPause);
+
 const gameWindow = document.getElementById('game-iframe');
 const headHtml = `
   <head>
