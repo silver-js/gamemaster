@@ -5,6 +5,7 @@ let hMargin = 0;
 let tScale = 1;
 let yOffset = 0;
 let vMargin = 0;
+let zoom = 1;
 
 const domList = document.querySelector('#editor-gfx ul');
 const confTitle = document.querySelector('#editor-gfx h4');
@@ -20,9 +21,10 @@ const refreshConf = ()=>{
   tSize = Number(confAll[0].value);
   xOffset = Number(confAll[1].value);
   hMargin = Number(confAll[2].value);
-  tScale = Number(confAll[3].value);
-  yOffset = Number(confAll[4].value);
-  vMargin = Number(confAll[5].value);
+  zoom = Number(confAll[3].value) / 2;
+  tScale = Number(confAll[4].value);
+  yOffset = Number(confAll[5].value);
+  vMargin = Number(confAll[6].value);
 }
 
 // base img buffer
@@ -35,7 +37,7 @@ const drawOnCanvas = ()=>{
     const tileQtyY = Math.ceil((domImg.height - yOffset + vMargin)/(tSize + vMargin));
     canvA.width = (tSize+1) * 8;
     canvA.height = (tSize+1) * Math.ceil(tileQtyX * tileQtyY / 8);
-    const scaleSize = tSize * tScale;
+    const scaleSize = tSize * tScale * zoom;
     for(let i = 0; i < tileQtyX; i++){
       for(let j = 0; j < tileQtyY; j++){
         const canvIndex = j * tileQtyX + i;
@@ -48,7 +50,7 @@ const drawOnCanvas = ()=>{
     }
   }
 }
-for(let i = 0; i < 6; i++){
+for(let i = 0; i < 7; i++){
   confAll[i].addEventListener('change', drawOnCanvas);
 }
 domImg.onload = ()=>{
