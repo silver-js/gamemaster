@@ -175,57 +175,71 @@ main{
   tab-size: 2;
 }
 
-/* gfx tab */
-#editor-gfx{
+/* atlas tab */
+#editor-atlas{
   height: 50vh;
 }
-#editor-gfx div.wrapper{
+#editor-atlas div.wrapper{
   height: 100%;
 }
-#gfx-list{
+#atlas-list{
   width: 20vmin;
   overflow-y: scroll;
 }
-#gfx-list li{
+#atlas-list li{
   margin: .5em;
   padding: .5em;
   box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
   word-break: break-all;
   font-size: .6em;
 }
-#gfx-list li img{
+#atlas-list li img{
   display: block;
   width: 100%;
 }
-#editor-gfx h4{
+#editor-atlas h4{
   text-align: center;
 }
-#editor-gfx p{
+#editor-atlas p{
   text-align: center;
   box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
   margin: .5em;
 }
-#gfx-conf ul{
+#atlas-conf ul{
   width: 45%;
 }
-#gfx-conf-l{
+#atlas-conf-l{
   text-align: right;
 }
-#gfx-conf-r{
+#atlas-conf-r{
   text-align: left;
 }
-#gfx-conf input{
+#atlas-conf input{
   width: 5em;
   margin-right: 1em;
 }
-#editor-gfx div.grow{
+#atlas-conf-wrapper{
+  position: relative;
+}
+#editor-atlas div.grow{
     overflow-y: scroll;
     height: 100%;
 }
-#editor-gfx canvas{
+#editor-atlas canvas{
+  box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
+  image-rendering: pixelated;
+}
+#atlas-canv-a{
   width: 95%;
   display: block;
   margin: 1em auto;
+}
+#atlas-canv-b{
+  pointer-events: none;
+  position: absolute;
+  transition: .1s;
+  z-index: 1000;
+  transform: scale(0);
   background: #f0f;
 }
 

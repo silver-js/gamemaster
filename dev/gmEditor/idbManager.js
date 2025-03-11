@@ -6,7 +6,7 @@ window.db  = {
     version: 'x.x',
     code: [''],
     maps: [],
-    gfx: {},
+    atlas: {},
     sfx: [],
   },
   loaderFunctions: [],
@@ -42,19 +42,26 @@ const deleteData = (store, x) =>{
 
 //// <-- idb rom load --> ////
 const loadRomDB = ()=>{
-  const dQuery = getAllData('game_data');
-  dQuery.onsuccess = ()=>{
-    const dRes = dQuery.result;
-    dRes.forEach(n =>{
+  const aQuery = getAllData('game_data');
+  aQuery.onsuccess = ()=>{
+    const aRes = aQuery.result;
+    aRes.forEach(n =>{
       db.rom[n.key] = n.value;
     });
-    const cQuery = getAllData('code');
-    cQuery.onsuccess = ()=>{
-      const cRes = cQuery.result;
-      cRes.forEach(n =>{
+    const bQuery = getAllData('code');
+    bQuery.onsuccess = ()=>{
+      const bRes = bQuery.result;
+      bRes.forEach(n =>{
         db.rom.code[n.id] = n.value;
       });
-      db.onload();
+      const cQuery = getAllData('atlas');
+      cQuery.onsuccess = ()=>{
+      const cRes = cQuery.result;
+        cRes.forEach(n=>{
+          db.rom.atlas[n.id] = n.value;
+        });
+        db.onload();
+      }
     }
   }
 }
@@ -72,7 +79,7 @@ dbRequest.onupgradeneeded = e=>{
   codeStore.put({id: 0, value: ''});
 
   res.createObjectStore("maps", {keyPath: 'id'});
-  res.createObjectStore("gfx", {keyPath: 'id'});
+  res.createObjectStore("atlas", {keyPath: 'id'});
   res.createObjectStore("sfx", {keyPath: 'id'});
   console.log('database created...');
 }

@@ -1,7 +1,7 @@
 //// <-- Init --> ////
 import './idbManager.js';
 import './codeEditor.js';
-import './gfxEditor.js';
+import './atlasEditor.js';
 import './romPlayer.js';
 
 

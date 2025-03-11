@@ -10,7 +10,7 @@ const playPause = ()=>{
   domEditor.style.display = playState?'none':'flex';
   domGame.style.display = playState?'flex':'none';
   if(playState){
-    playRom(db.rom);
+    playRom();
     return
   }
   stopRom()
@@ -36,6 +36,7 @@ const preScript = `
 <script type="module">
   import {_loop, _pad, _cfg} from './modules/gmCore_min.js';
   import gfx from './modules/gfx.js';
+  
   for(let k in console){
     console[k] = parent.console[k];
   }
@@ -48,12 +49,18 @@ const endScript = `
 }
 </script>
 `;
-export const playRom = (romData)=>{
-  const romCode = romData.code.join('\n');
+export const playRom = ()=>{
+  let atlasCode = 'let _al;'
+  const atlas = db.rom.atlas;
+  for(let k in atlas){
+    atlasCode += `let ${k} = [];_al = async ()=>{let x = await gfx.loadAtlas('${atlas[k].src}', ${atlas[k].tileSize}, ${atlas[k].scale}, ${atlas[k].offsetX}, ${atlas[k].offsetY}, ${atlas[k].hMargin}, ${atlas[k].vMargin});${k} = x};_al();`;
+  }
+  atlasCode += `_al=null;`;
+  const romCode = db.rom.code.join('\n');
   try{
     console.clear();
     Function(romCode);
-    gameWindow.srcdoc = headHtml + bodyHtml + preScript + romCode + endScript
+    gameWindow.srcdoc = headHtml + bodyHtml + preScript + atlasCode + romCode + endScript
   }
   catch(_e){
     const strArr = romCode.split('\n');
@@ -76,6 +83,7 @@ export const playRom = (romData)=>{
       catch(_erri){}
     }
   }
+
 }
 export const stopRom = ()=>{
   gameWindow.srcdoc = '';

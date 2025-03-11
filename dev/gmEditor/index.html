@@ -35,7 +35,7 @@
               <label for="map-select">Maps</label>
             </li>
             <li>
-              <label for="gfx-select">GFX</label>
+              <label for="atlas-select">Atlas</label>
             </li>
             <li>
               <label for="sfx-select">SFX</label>
@@ -58,30 +58,31 @@
         <article id="editor-map">
           -- here goes the game map editor --
         </article>
-        <input class="hidden" id="gfx-select" type="radio" name="editor-select">
-        <article id="editor-gfx">
+        <input class="hidden" id="atlas-select" type="radio" name="editor-select">
+        <article id="editor-atlas">
           <div class="flex-between wrapper">
-            <ul id="gfx-list">
+            <ul id="atlas-list">
             </ul>
             <div class="grow">
               <h4>Nothing Selected</h4>
-              <div class="hidden" id="gfx-conf-wrapper">
-                <p id="gfx-file-picker">Pick Image</p>
-                <div id="gfx-conf" class="flex-between">
-                  <ul id="gfx-conf-l">
+              <div class="hidden" id="atlas-conf-wrapper">
+                <p id="atlas-file-picker">Pick Image</p>
+                <div id="atlas-conf" class="flex-between">
+                  <ul id="atlas-conf-l">
                     <li>Tile Size <input type="number" value="32"/></li>
                     <li>X Offset <input type="number" value="0"/></li>
                     <li>H Margin <input type="number" value="0"/></li>
                     <li> Zoom <input type="range" value="2" min="1" max="4"/></li>
                   </ul>
-                  <ul id="gfx-conf-r">
+                  <ul id="atlas-conf-r">
                     <li><input type="number" value="1"/>Scale</li>
                     <li><input type="number" value="0"/>Y Offset</li>
                     <li><input type="number" value="0"/>V Margin</li>
                   </ul>
                 </div>
-                <canvas id="gfx-canv-a"></canvas>
-                <canvas id="gfx-canv-b"></canvas>
+                <canvas id="atlas-canv-a"></canvas>
+                <canvas id="atlas-canv-b"></canvas>
+                <p id="atlas-save-btn">Save</p>
               </div>
             </div>
           </div>
