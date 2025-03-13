@@ -4,7 +4,9 @@ let xOffset = 0;
 let hMargin = 0;
 let tScale = 1;
 let yOffset = 0;
+let tColumns = 8;
 let vMargin = 0;
+let tAnim = 1;
 let zoom = 2;
 
 const domList = document.querySelector('#editor-atlas ul');
@@ -17,17 +19,37 @@ const ctxA = canvA.getContext('2d');
 const canvB = document.getElementById('atlas-canv-b');
 const ctxB = canvB.getContext('2d');
 
+domList.addEventListener('mousewheel', e=>{
+  domList.scrollLeft += e.deltaY;
+});
+
+const confBtns = document.querySelectorAll('#atlas-conf button');
+const confInputs = document.querySelectorAll('#atlas-conf input');
+for(let i = 0; i < confBtns.length; i++){
+  confBtns[i].addEventListener('click', e=>{
+    const ele = confInputs[Math.floor(i/2)];
+    ele.value =  Math.max(ele.min, ele.value - (i % 2 ? -1 : 1));
+    drawOnCanvas();
+  });
+}
+
 const confAll = document.querySelectorAll('#atlas-conf input');
 const refreshConf = ()=>{
   tSize = Number(confAll[0].value);
-  xOffset = Number(confAll[1].value);
-  hMargin = Number(confAll[2].value);
-  zoom = Number(confAll[3].value);
-  tScale = Number(confAll[4].value);
-  yOffset = Number(confAll[5].value);
-  vMargin = Number(confAll[6].value);
+  tScale = Number(confAll[1].value);
+  xOffset = Number(confAll[2].value);
+  yOffset = Number(confAll[3].value);
+  hMargin = Number(confAll[4].value);
+  vMargin = Number(confAll[5].value);
+  tColumns = Number(confAll[6].value);
+  tAnim = Number(confAll[7].value);
+  zoom = Number(confAll[8].value);
 }
 
+let posX = 0;
+let posY = 0;
+let scaleSize = 16;
+let bW = 16;
 canvA.addEventListener('mousemove', e=>{
   const rect = e.target.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -35,24 +57,34 @@ canvA.addEventListener('mousemove', e=>{
   canvB.style.left = x + e.target.offsetLeft - canvB.offsetWidth / 2 + 'px';
   canvB.style.top = y + e.target.offsetTop - canvB.offsetHeight / 2 +'px';
   
-  const tW = canvA.offsetWidth / 8
-  const bW = canvB.width / 3;
+  const tW = canvA.offsetWidth / tColumns
+  bW = canvB.width / 3;
 
-  const posX = Math.floor(x/tW);
-  const posY = Math.floor(y/tW);
-  const scaleSize = tSize * tScale;
-  for(let i = 0; i < 3; i++){
-    for(let j = 0; j < 3; j++){
-      ctxB.drawImage(canvA, posX * (scaleSize + 1), posY * (scaleSize + 1), scaleSize, scaleSize, bW * i, bW * j, bW, bW);
+  posX = Math.floor(x/tW);
+  posY = Math.floor(y/tW);
+  scaleSize = tSize * tScale;
+});
+let showingSecCanvas = false;
+let anim = 0;
+const drawCanvAnim = ()=>{
+  anim = (anim + 1) % tAnim
+  if(showingSecCanvas){
+    for(let i = 0; i < 3; i++){
+      for(let j = 0; j < 3; j++){
+        ctxB.drawImage(canvA, (posX + anim) * (scaleSize + 1), posY * (scaleSize + 1), scaleSize, scaleSize, bW * i, bW * j, bW, bW);
+      }
     }
   }
-});
+}
+setInterval(drawCanvAnim,150);
 canvA.addEventListener('mouseenter', e=>{
+  showingSecCanvas = true;
   canvB.width = 3 * tSize * zoom;
   canvB.height = 3 * tSize * zoom;
   canvB.style.transform = 'scale(1)';
 });
 canvA.addEventListener('mouseleave', e=>{
+  showingSecCanvas = false;
   canvB.style.transform = 'scale(0)';
 });
 
@@ -69,31 +101,31 @@ const drawOnCanvas = ()=>{
     const scaleSize = tSize * tScale;
     const tileQtyX = Math.floor((domImg.width - xOffset + hMargin)/(tSize + hMargin))
     const tileQtyY = Math.ceil((domImg.height - yOffset + vMargin)/(tSize + vMargin));
-    canvA.width = (scaleSize+1) * 8;
-    canvA.height = (scaleSize+1) * Math.ceil(tileQtyX * tileQtyY / 8);
+    canvA.width = (scaleSize+1) * tColumns;
+    canvA.height = (scaleSize+1) * Math.ceil(tileQtyX * tileQtyY / tColumns);
     for(let i = 0; i < tileQtyX; i++){
       for(let j = 0; j < tileQtyY; j++){
         const canvIndex = j * tileQtyX + i;
         ctxA.fillStyle = "#000";
         ctxA.fillRect(
-          (canvIndex % 8) * (scaleSize + 1) - 1, Math.floor(canvIndex / 8) * (scaleSize + 1) - 1,
+          (canvIndex % tColumns) * (scaleSize + 1) - 1, Math.floor(canvIndex / tColumns) * (scaleSize + 1) - 1,
           scaleSize + 2, scaleSize + 2
         );
         ctxA.fillStyle = "#f0f";
         ctxA.fillRect(
-          (canvIndex % 8) * (scaleSize + 1), Math.floor(canvIndex / 8) * (scaleSize + 1),
+          (canvIndex % tColumns) * (scaleSize + 1), Math.floor(canvIndex / tColumns) * (scaleSize + 1),
           scaleSize, scaleSize
         );
         ctxA.drawImage(
           domImg,
           i * (tSize + hMargin) + xOffset, j * (tSize + vMargin) + yOffset, tSize, tSize,
-          (canvIndex % 8) * (scaleSize + 1), Math.floor(canvIndex / 8) * (scaleSize + 1), scaleSize, scaleSize
+          (canvIndex % tColumns) * (scaleSize + 1), Math.floor(canvIndex / tColumns) * (scaleSize + 1), scaleSize, scaleSize
         );
       }
     }
   }
 }
-for(let i = 0; i < 7; i++){
+for(let i = 0; i < 9; i++){
   confAll[i].addEventListener('change', drawOnCanvas);
 }
 domImg.onload = ()=>{
@@ -124,15 +156,25 @@ domList.addEventListener('click', e=>{
       editName = e.target.alt;
       domImg.src = e.target.src;
       confAll[0].value = db.rom.atlas[e.target.alt].tileSize;
-      confAll[1].value = db.rom.atlas[e.target.alt].offsetX;
-      confAll[2].value = db.rom.atlas[e.target.alt].hMargin;
-      confAll[4].value = db.rom.atlas[e.target.alt].scale;
-      confAll[5].value = db.rom.atlas[e.target.alt].offsetY;
-      confAll[6].value = db.rom.atlas[e.target.alt].vMargin;
+      confAll[1].value = db.rom.atlas[e.target.alt].scale;
+      confAll[2].value = db.rom.atlas[e.target.alt].offsetX;
+      confAll[3].value = db.rom.atlas[e.target.alt].offsetY;
+      confAll[4].value = db.rom.atlas[e.target.alt].hMargin;
+      confAll[5].value = db.rom.atlas[e.target.alt].vMargin;
+      confAll[6].value = db.rom.atlas[e.target.alt].tColumns;
       drawOnCanvas();
     }
 });
-
+domList.addEventListener('contextmenu', e=>{
+  e.preventDefault()
+  if(e.target.alt != undefined){
+    const ok = confirm(`Delete "${e.target.alt}"?`);
+    if(ok){ 
+      db.deleteEntry('atlas', e.target.alt);
+      location.reload();
+    }
+  }
+});
 
 filePicker.addEventListener('click', e=>{
   const input = document.createElement('input');
@@ -162,6 +204,7 @@ saveBtn.addEventListener('click', ()=>{
         hMargin,
         scale: tScale,
         offsetY: yOffset,
+        tColumns,
         vMargin,
       }
       updateAtlas()

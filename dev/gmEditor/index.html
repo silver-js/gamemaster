@@ -68,19 +68,62 @@
               <h4>Nothing Selected</h4>
               <div class="hidden" id="atlas-conf-wrapper">
                 <p id="atlas-file-picker">Pick Image</p>
-                <div id="atlas-conf" class="flex-between">
-                  <ul id="atlas-conf-l">
-                    <li>Tile Size <input type="number" value="32"/></li>
-                    <li>X Offset <input type="number" value="0"/></li>
-                    <li>H Margin <input type="number" value="0"/></li>
-                    <li> Zoom <input type="range" value="2" min="1" max="4"/></li>
-                  </ul>
-                  <ul id="atlas-conf-r">
-                    <li><input type="number" value="1"/>Scale</li>
-                    <li><input type="number" value="0"/>Y Offset</li>
-                    <li><input type="number" value="0"/>V Margin</li>
-                  </ul>
-                </div>
+                <ul id="atlas-conf">
+                  <li>
+                    <h6>Tile Size</h6>
+                    <div>
+                      <button>-</button><input type="number" value="32" min="2"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>Scale</h6>
+                    <div>
+                      <button>-</button><input type="number" value="1" min="1"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>X-Offset</h6>
+                    <div>
+                      <button>-</button><input type="number" value="0"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>Y-Offset</h6>
+                    <div>
+                      <button>-</button><input type="number" value="0"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>H-Margin</h6>
+                    <div>
+                      <button>-</button><input type="number" value="0"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>V-Margin</h6>
+                    <div>
+                      <button>-</button><input type="number" value="0"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>#Columns</h6>
+                    <div>
+                      <button>-</button><input type="number" value="8" min="1"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>#Animations</h6>
+                    <div>
+                      <button>-</button><input type="number" value="1" min="1"/><button>+</button>
+                    </div>
+                  </li>
+                  <li>
+                    <h6>Zoom</h6>
+                    <div>
+                      <input type="range" min="1" value="2" max="5"/>
+                    </div>
+                  </li>
+                </ul>
                 <canvas id="atlas-canv-a"></canvas>
                 <canvas id="atlas-canv-b"></canvas>
                 <p id="atlas-save-btn">Save</p>
