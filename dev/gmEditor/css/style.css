@@ -11,6 +11,10 @@ textarea {
 }
 *{
   margin:0;padding:0;box-sizing:border-box;
+  position: relative;
+}
+h1, h2, h3, h4, h5, h6{
+  text-align: center;
 }
 ul{
   list-style: none;
@@ -58,7 +62,7 @@ ul{
 
 /*  body  */
 html{
-  height: 100%;
+  height: 100vh;
   color: #fff;
   background: linear-gradient(135deg, #022, #011 5%, #000 20%, #000 80%, #011 95%, #022);
 }
@@ -74,15 +78,15 @@ header{
   align-items: center;
 }
 header h1{
-  width: 30%;
   font-size: 1.5rem;
-  color: #010;
-  text-shadow: 1px 1px #999, -1px -1px #999;
+  color: #6a6;
+  text-shadow: 1px 1px #050, -1px -1px #fff;
 }
 header nav{
   box-shadow: 0 0 2px #bbb;
   padding: .2em .4em;
   display: flex;
+  flex-direction: column;
   gap: 1em;
 }
 
@@ -91,7 +95,7 @@ main{
   margin: 0 1rem;
 }
 #game-data{
-  padding: .2em;
+  padding: .2em 0;
 }
 #game-data button{
   box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
@@ -102,8 +106,10 @@ main{
 }
 #tool-selector{
   padding: .5rem 0;
+  flex-wrap: wrap;
 }
 #tool-selector li{
+  min-width: 5em;
   flex-grow: 100;
 }
 #tool-selector li label{
@@ -111,6 +117,7 @@ main{
 }
 #editor-wrapper article{
   flex-grow: 100;
+  height: 50vh;
   animation: popanim .3s;
   border: 1px solid grey;
 }
@@ -123,53 +130,63 @@ main{
 
 /* code editor */
 
-#editor-code{
-  height: 10vh;
-}
 #editor-code-container {
-  height: 100%;
   display: flex;
-}
-#code-area{
-  position: relative;
+  flex-direction: column;
   height: 100%;
 }
 #editor-code ul{
+  padding: .2em;
   overflow: scroll;
-  width: 2.5em;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  display: flex;
+}
+#editor-code ul li{
+  padding: .2em 0;
+  min-width: 3em;
 }
 #editor-code ul::-webkit-scrollbar {
   display: none;
 }
+
+#code-area{
+  position: relative;
+  height: 100%;
+  background: #666;
+}
+
 #code-area textarea{
-  tab-size: 2;
   border: none;
   font-family: monospace;
   font-size: 1em;
   white-space: pre;
-  left: 6.7em;
-  top: 1.3em;
   outline: none;
   resize: none;
   color:#0000;
   caret-color: #f0932b;
   background: none;
-  width:calc(100% - 6.7em);
-  height: calc(100% - 1.3em);
+  overflow: scroll;
 }
 #code-area textarea, #code-area pre{
   position: absolute;
-}
-#code-area pre{
-  overflow: hidden;
-  pointer-events: none;
-  width:100%;
+  tab-size: 2;
   height: 100%;
 }
+#code-area textarea::-webkit-scrollbar {
+  display: none;
+}
+#code-area pre{
+    pointer-events: none;
+}
+#code-lines{
+  width: 2.6em;
+  text-align: right;
+}
+#js-code, #code-area textarea{
+  left: 2.8em;
+  width:calc(100% - 2.8em);
+}
 #code-area code{
-  padding: 0 10em 10em .5em;
+  padding: 0;
   overflow: hidden;
   height: 100%;
   tab-size: 2;
@@ -287,7 +304,17 @@ aside pre{
 footer{
   text-align: center;
 }
-
+@media (orientation: landscape){
+  header nav{
+    flex-direction: row;
+  }
+  #editor-code-container {
+    flex-direction: row;
+  }
+  #editor-code-container ul{
+    display: block;
+  }
+}
 @keyframes popanim{
   0%{
     transform: scaleY(0) rotate(45deg);

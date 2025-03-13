@@ -6,12 +6,17 @@ window.codeLineOffset = 7;
 // dom
 const domCodePages = document.getElementById('pages-list');
 const domCodeText = document.querySelector('#code-area textarea');
-const domCodePre = document.querySelector('#code-area pre');
+const domCodeLines = document.querySelector('#code-lines');
+const domCodePre = document.querySelector('#js-code');
 
+domCodePages.addEventListener('mousewheel', e=>{
+  domCodePages.scrollLeft += e.deltaY;
+});
 const codeScroll = ()=>{
-  const code = document.querySelector('#code-area code');
-  code.scrollTop = domCodeText.scrollTop;
-  code.scrollLeft = domCodeText.scrollLeft;
+  const code = document.querySelectorAll('#code-area code');
+  code[0].scrollTop = domCodeText.scrollTop;
+  code[1].scrollTop = domCodeText.scrollTop;
+  code[1].scrollLeft = domCodeText.scrollLeft;
 }
 
 const renderCode = (e)=>{
@@ -27,9 +32,10 @@ const renderCode = (e)=>{
     db.rom.code[codePage] = domCodeText.value;
     db.updateRom('code', codePage);
   let i = codeLine + 1;
-  domCodePre.innerHTML = `<code class="language-javascript">\n/*${(i++).toString().padStart(5," ")}*/ ${domCodeText.value.replace(
-    /\n/g, ()=>`\n/*${(i++).toString().padStart(5," ")}*/ `
-    )}</code>`;
+  let lineText = i++ + '.\n';
+  domCodeText.value.replace(/\n/g, ()=>{lineText += `${i++}.\n`});
+  domCodePre.innerHTML = `<code class="language-javascript">${domCodeText.value}\n</code>`;
+  domCodeLines.innerHTML = `<code class="languaje-javascript">${lineText}\n</code>`;
   hljs.highlightAll();
   codeScroll();
 };

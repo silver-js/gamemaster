@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <title>Game Master: js game editor</title>
     <link href="css/style.css" rel="stylesheet">
     <link href="css/tokyo-night-dark.min.css" rel="stylesheet">
     <script src="highlight.min.js"></script>
@@ -11,7 +11,7 @@
   </head>
   <body class="flex-column">
     <header class="flex-between">
-      <h1><label for="modal-main-menu">GM Editor</label></h1>
+      <h1 class="grow"><label for="modal-main-menu">Game Master</label></h1>
       <nav>
         <h3>Project:</h3>
         <ul class="btn-list flex-between">
@@ -23,7 +23,7 @@
     </header>
     <main class="flex-column grow">
       <section class="flex-between" id="game-data">
-        <h4 id="game-title">No game</h4>
+        <h4 class="grow" id="game-title">No game</h4>
         <button id="play-stop-btn">&#9658 Play</button>
       </section>
       <section class="flex-column grow" id="editor-wrapper">
@@ -49,7 +49,8 @@
               <li>+</li>
             </ul>
             <div class="grow" id="code-area">
-                <pre><code></code></pre>
+                <pre id="code-lines"><code>0001</code></pre>
+                <pre id="js-code"><code></code></pre>
                 <textarea spellcheck=false value="\n"></textarea>
             </div>
           </div>
