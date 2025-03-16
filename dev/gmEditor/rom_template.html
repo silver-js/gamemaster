@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      *{color:pink;}
+    </style>
+  </head>
+  <body>
+    <div id="game-wrapper"></div>
+  </body>
+<script type="module">
+  import {_loop, _pad, _cfg} from './modules/gmCore_min.js';
+  import gfx from './modules/gfx.js';
+  for(let k in console){
+    //console[k] = (...args) => {
+      //parent.console[k](...args);
+      //parent.document.getElementById("console-log").innerHTML += JSON.stringify(args);
+    //}
+  }
+  try{
+    // game rom
+    console.log("test");
+    const layer1 = gfx.iBuffer();
+    layer1.color("#ff0");
+    layer1.rect(10,10,100,100)
+    layer1.draw();
+  
+  //////////////
+  }catch(_e){
+    console.log(_e);
+  }
+  </script>
+</html>

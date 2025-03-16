@@ -322,6 +322,19 @@ aside pre{
 
 footer{
   text-align: center;
+  position: relative;
+}
+footer p{
+  position: absolute;
+  background: grey;
+  color:grey;
+  bottom: 0;
+  right: 0;
+  width: 12vmin;
+  height: 12vmin;
+  transition: .1s;
+  z-index: 1000;
+  
 }
 @media (orientation: landscape){
   header nav{

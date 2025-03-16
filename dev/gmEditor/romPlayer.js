@@ -4,7 +4,9 @@ const domPlayStop = document.getElementById('play-stop-btn');
 const domEditor = document.getElementById('editor-wrapper');
 const domGame = document.getElementById('game-wrapper');
 const gameWindow = document.getElementById('game-iframe');
+const domConsole = document.getElementById('console-log');
 
+console.log(db.rom.atlas.tile)
 const integrityCheck = (code)=>{
   try{
     Function(code);
@@ -27,10 +29,18 @@ const integrityCheck = (code)=>{
   }
 }
 const preCode = `<head><style>*{color:pink;}</style></head><body><div id="game-wrapper"></div></body>`;
-const preScripts = `<script type="module">import {_loop, _pad, _cfg} from './modules/gmCore_min.js';import gfx from './modules/gfx.js';for(let k in console){console[k] = parent.console[k];}try{`;
+const preScripts = `<script type="module">import {_loop, _pad, _cfg} from './modules/gmCore_min.js';import gfx from './modules/gfx.js';
+for(let k in console){
+  console[k] = (...args) => {
+    parent.console[k](...args);
+    parent.document.getElementById("console-log").innerHTML += JSON.stringify(args);
+  }
+}
+try{`;
 const endScript = `}catch(_e){console.log(_e);}</script>`;
 
 const playRom = (code)=>{
+  const codeRes = "" //`const tileImgData = '${db.rom.atlas.tile.src}'`;
   /*
   let atlasCode = 'let _al;'
   const atlas = db.rom.atlas;
@@ -44,7 +54,7 @@ const playRom = (code)=>{
   catch(_e){
   }
   */
-  gameWindow.srcdoc = preCode + preScripts + code + endScript;
+  gameWindow.srcdoc = preCode + preScripts + codeRes + code + endScript;
 }
 const stopRom = ()=>{
   gameWindow.srcdoc = '';
