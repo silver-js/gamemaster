@@ -66,7 +66,8 @@ document.getElementById('project-load-btn').addEventListener('click', e=>{
         try{
           var content = readerEvent.target.result; // this is the content!
           const loadedRom = JSON.parse(content);
-          if(Array.isArray(loadedRom.code) && Array.isArray(loadedRom.maps) && Array.isArray(loadedRom.gfx) && Array.isArray(loadedRom.sfx)){
+          console.log(loadedRom);
+          if(Array.isArray(loadedRom.code) && Array.isArray(loadedRom.maps) && typeof loadedRom.atlas == "object" && Array.isArray(loadedRom.sfx)){
             db.rom = loadedRom;
             db.onload();
             return

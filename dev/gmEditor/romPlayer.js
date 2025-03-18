@@ -6,7 +6,19 @@ const domGame = document.getElementById('game-wrapper');
 const gameWindow = document.getElementById('game-iframe');
 const domConsole = document.getElementById('console-log');
 
-console.log(db.rom.atlas.tile)
+let consoleActive = false;
+domConsole.addEventListener('dblclick', (e)=>{
+  consoleActive = !consoleActive;
+  refreshConsole();
+});
+const refreshConsole = ()=>{
+  domConsole.style.width = consoleActive ? '100%' : '12vmin';
+  domConsole.style.height = consoleActive ? '90vh' : '12vmin';
+  domConsole.style.color = consoleActive ? '#fff' : '#666';
+}
+refreshConsole();
+
+
 const integrityCheck = (code)=>{
   try{
     Function(code);
@@ -28,33 +40,31 @@ const integrityCheck = (code)=>{
     return false;
   }
 }
-const preCode = `<head><style>*{color:pink;}</style></head><body><div id="game-wrapper"></div></body>`;
-const preScripts = `<script type="module">import {_loop, _pad, _cfg} from './modules/gmCore_min.js';import gfx from './modules/gfx.js';
-for(let k in console){
-  console[k] = (...args) => {
-    parent.console[k](...args);
-    parent.document.getElementById("console-log").innerHTML += JSON.stringify(args);
+const htmlStart = `<!doctype html><html>
+  <head><title>My Game</title><style>*{margin:0;padding:0;box-sizing:border-box;}html{height:100%;}body{background:#000;display:flex;justify-content:space-evenly;align-items:center;height:100%;}#game-wrapper{flex-grow:100;}</style></head>
+  <body><div id="game-wrapper"></div></body>
+  <script type="module">import {_loop, _pad, _cfg} from './modules/gmCore_min.js';import _gfx from './modules/gfx.js';try{
+`;
+const htmlEnd = `}catch(_e){console.log(_e.stack);}</script></html>`
+
+const htmlLogger = `
+  console.log = (...args) =>{
+    parent.console.log(...args);
+    parent.document.getElementById("console-log").innerHTML += JSON.stringify(args).replace(/\\[|\\]|\\\\n/g,"<br/>");
   }
-}
-try{`;
-const endScript = `}catch(_e){console.log(_e);}</script>`;
+`;
+
 
 const playRom = (code)=>{
-  const codeRes = "" //`const tileImgData = '${db.rom.atlas.tile.src}'`;
-  /*
-  let atlasCode = 'let _al;'
-  const atlas = db.rom.atlas;
-  for(let k in atlas){
-    atlasCode += `let ${k} = [];_al = async ()=>{let x = await gfx.loadAtlas('${atlas[k].src}', ${atlas[k].tileSize}, ${atlas[k].scale}, ${atlas[k].offsetX}, ${atlas[k].offsetY}, ${atlas[k].hMargin}, ${atlas[k].vMargin});${k} = x};_al();`;
+  let codeResDeclarations = '';
+  let codeResLoader = 'let gfxLoaded=false;(async()=>{';
+  for(let key in db.rom.atlas){
+    const x = db.rom.atlas[key];
+    codeResDeclarations += `let ${key};`
+    codeResLoader += `${key}=await _gfx.loadAtlas('${x.src}', ${x.tileSize}, ${x.scale}, ${x.offsetX}, ${x.offsetY}, ${x.hMargin}, ${x.vMargin});`
   }
-  atlasCode += `_al=null;`;
-  try{
-    gameWindow.srcdoc = headHtml + bodyHtml + preScript + atlasCode + romCode + endScript
-  }
-  catch(_e){
-  }
-  */
-  gameWindow.srcdoc = preCode + preScripts + codeRes + code + endScript;
+  codeResLoader += 'gfxLoaded=true})();'; 
+  gameWindow.srcdoc = htmlStart + htmlLogger + codeResDeclarations + codeResLoader + code + htmlEnd;
 }
 const stopRom = ()=>{
   gameWindow.srcdoc = '';
@@ -67,6 +77,8 @@ const playPause = ()=>{
   const romCode = db.rom.code.join('\n');
   if(playState){
     console.clear();
+    domConsole.innerHTML = '';
+
     if(integrityCheck(romCode)){
       playRom(romCode);
     }

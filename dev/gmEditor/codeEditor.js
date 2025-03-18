@@ -1,7 +1,7 @@
 // init
 let codePage = 0;
 let codeLine = 0;
-window.codeLineOffset = 7;
+window.codeLineOffset = 6;
 
 // dom
 const domCodePages = document.getElementById('pages-list');
@@ -28,6 +28,8 @@ const renderCode = (e)=>{
       padding = x;
     });
     e.target.value = preStr + padding + e.target.value.slice(cPoint);
+    e.target.selectionStart = cPoint + padding.length;
+    e.target.selectionEnd = cPoint + padding.length;
   }
     db.rom.code[codePage] = domCodeText.value;
     db.updateRom('code', codePage);

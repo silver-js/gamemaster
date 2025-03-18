@@ -1,0 +1,28 @@
+/////////////////
+// Loop Module //
+//   Basics    //
+/////////////////
+
+// _loop handles the draw loop and the update loop,
+// the draw loop can skip frames depending on performance,
+// while the update loop runs a fixed amount of times per second.
+
+// Usage:
+
+_loop.update = ()=>{
+  /*
+    here goes your update code
+  */
+}
+
+_loop.draw = ()=>{
+  /*
+    here goes your draw code
+  */
+}
+
+// You can change the update and draw interval(default is 30):
+
+_cfg.setClock(60);    // sets the game logic to 60 updates per second.
+
+_cfg.setFps(60);      // sets the draw function to a max 60fps.

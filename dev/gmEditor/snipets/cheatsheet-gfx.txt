@@ -4,19 +4,20 @@
 /////////////////////
 
 // The graphics module works with as many layers as you need:
+// canvas dimensions are 640x360
 
-const myLayer = gfx.iBuffer();   // creates a new layer to work with
+const myLayer = _gfx.iBuffer();   // creates a new layer to work with
 /*
   draw some stuff here:
 */
-gfx.clear()       // clears the main canvas
+_gfx.clear()      // clears the main canvas
 myLayer.draw()    // draws this layer on the main canvas
 
 // if you have multiple layers,
 // the best option is to create a simple graphics pipeline:
 
 const drawPipeline = ()=>{
-  gfx.clear();
+  _gfx.clear();
   backgroundLayer.draw();
   mainLayerA.draw();
   mainLayerB.draw();
@@ -46,3 +47,13 @@ myLayer.lineRect(10, 10, 40, 40)          // draws a line rectangle
 
 myLayer.figure(x1, y1, x2, y2...)         // draws a figure
 myLayer.lines(x1, y1, x2, y2...)          // draws a set of continuous lines
+
+////////////////////
+// Sprite Methods //
+////////////////////
+
+myLayer1.img(myAtlas[id], x, y);                // draws an image.
+myLayer1.img2(myAtlas[id], x, y, w, h);         // draws an image with a specified width and height.
+myLayer1.img3(myAtlas[id], angle, x, y, w, h);  // same as img2 but rotated.
+
+

@@ -21,7 +21,6 @@ ul{
   text-align: center;
 }
 
-
 /* -- Custom classes -- */
 
 .big{
@@ -325,13 +324,11 @@ footer{
   position: relative;
 }
 footer p{
+  text-align: left;
   position: absolute;
-  background: grey;
-  color:grey;
+  background: #666;
   bottom: 0;
   right: 0;
-  width: 12vmin;
-  height: 12vmin;
   transition: .1s;
   z-index: 1000;
   
