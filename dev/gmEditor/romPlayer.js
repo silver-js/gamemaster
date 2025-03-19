@@ -43,7 +43,7 @@ const integrityCheck = (code)=>{
 const htmlStart = `<!doctype html><html>
   <head><title>My Game</title><style>*{margin:0;padding:0;box-sizing:border-box;}html{height:100%;}body{background:#000;display:flex;justify-content:space-evenly;align-items:center;height:100%;}#game-wrapper{flex-grow:100;}</style></head>
   <body><div id="game-wrapper"></div></body>
-  <script type="module">import {_loop, _pad, _cfg} from './modules/gmCore_min.js';import _gfx from './modules/gfx.js';try{
+  <script type="module">import {_loop, _pad, _cfg} from './modules/gmCore_min.js';import _gfx from './modules/gfx.js';_cfg.pointerTarget(_gfx.canv);try{
 `;
 const htmlEnd = `}catch(_e){console.log(_e.stack);}</script></html>`
 

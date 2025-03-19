@@ -221,7 +221,7 @@ const clear = ()=> iClear(ctx);
 
 // export
 
-export default {iBuffer, sBuffer, clear, loadAtlas};
+export default {iBuffer, sBuffer, clear, loadAtlas, canv};
 
 
 /*
