@@ -325,6 +325,7 @@ footer{
 }
 footer p{
   text-align: left;
+  border: 1px solid #fff;
   position: absolute;
   background: #666;
   bottom: 0;

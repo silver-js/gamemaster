@@ -1,5 +1,6 @@
 // init
 let playState = false;
+window.myLog = '';
 const domPlayStop = document.getElementById('play-stop-btn');
 const domEditor = document.getElementById('editor-wrapper');
 const domGame = document.getElementById('game-wrapper');
@@ -14,7 +15,8 @@ domConsole.addEventListener('dblclick', (e)=>{
 const refreshConsole = ()=>{
   domConsole.style.width = consoleActive ? '100%' : '12vmin';
   domConsole.style.height = consoleActive ? '90vh' : '12vmin';
-  domConsole.style.color = consoleActive ? '#fff' : '#666';
+  domConsole.style.textAlign = consoleActive ? 'left' : 'center';
+  domConsole.innerHTML = consoleActive ? myLog : 'Logs';
 }
 refreshConsole();
 
@@ -45,12 +47,14 @@ const htmlStart = `<!doctype html><html>
   <body><div id="game-wrapper"></div></body>
   <script type="module">import {_loop, _pad, _cfg} from './modules/gmCore_min.js';import _gfx from './modules/gfx.js';_cfg.pointerTarget(_gfx.canv);try{
 `;
-const htmlEnd = `}catch(_e){console.log(_e.stack);}</script></html>`
+const htmlEnd = `
+}catch(_e){console.log(_e.stack);}</script></html>`
 
 const htmlLogger = `
   console.log = (...args) =>{
+    let newLog = parent.window.myLog + JSON.stringify(args).replace(/\\[|\\]|\\\\n/g,"<br/>");
+    parent.window.myLog = newLog.split("<br/>").splice(-20).join("<br/>");
     parent.console.log(...args);
-    parent.document.getElementById("console-log").innerHTML += JSON.stringify(args).replace(/\\[|\\]|\\\\n/g,"<br/>");
   }
 `;
 
@@ -77,6 +81,7 @@ const playPause = ()=>{
   const romCode = db.rom.code.join('\n');
   if(playState){
     console.clear();
+    myLog = '';
     domConsole.innerHTML = '';
 
     if(integrityCheck(romCode)){

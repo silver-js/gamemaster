@@ -52,8 +52,15 @@ myLayer.lines(x1, y1, x2, y2...)          // draws a set of continuous lines
 // Sprite Methods //
 ////////////////////
 
-myLayer1.img(myAtlas[id], x, y);                // draws an image.
-myLayer1.img2(myAtlas[id], x, y, w, h);         // draws an image with a specified width and height.
-myLayer1.img3(myAtlas[id], angle, x, y, w, h);  // same as img2 but rotated.
+
+'IMPORTANT'
+// Images are loaded asyncronously,
+// Use the flag 'gfxLoaded' To check if all resources are loaded.
+
+if(gfxLoaded){
+  myLayer1.img(myAtlas[id], x, y);                // draws an image.
+  myLayer1.img2(myAtlas[id], x, y, w, h);         // draws an image with a specified width and height.
+  myLayer1.img3(myAtlas[id], angle, x, y, w, h);  // same as img2 but rotated.
+}
 
 
