@@ -138,6 +138,7 @@ const loadAtlas = async(url, res, scale = 1, ox = 0, oy = 0, hGap = 0, vGap = 0)
   saveImg();
   for(let vIndex=oy; vIndex<aImg.height; vIndex+=res+vGap){
     for(let hIndex=ox; hIndex<aImg.width; hIndex+=res+hGap){
+      aCtx.clearRect(0,0,cSize,cSize);
       aCtx.drawImage(
         aImg,
         hIndex, vIndex, res, res,
@@ -218,10 +219,33 @@ const sBuffer = ()=>{
 
 const clear = ()=> iClear(ctx);
 
+// map generation
+const mapImg = (data, imgArr, w)=>{
+  const mCanv = document.createElement('canvas');
+  mCanv.width = imgArr[0].width * w;
+  mCanv.height = imgArr[0].width * Math.floor(data.length / w);
+  const mCtx = mCanv.getContext('2d');
+  mCtx.imageSmoothingEnabled = false;
+  mCtx.webkitImageSmoothingEnabled = false;
+  mCtx.mozImageSmoothingEnabled = false;
+  for(let i = 0; i < data.length; i++){
+    mCtx.drawImage(
+      imgArr[data[i]],
+      imgArr[0].width * (i % w),
+      imgArr[0].width * Math.floor(i / w)
+    )
+
+  }
+  const mImg = new Image();
+  mImg.src = mCanv.toDataURL('image/png');
+  return mImg;
+}
+
+
 
 // export
 
-export default {iBuffer, sBuffer, clear, loadAtlas, canv};
+export default {iBuffer, sBuffer, clear, loadAtlas, canv, mapImg};
 
 
 /*
