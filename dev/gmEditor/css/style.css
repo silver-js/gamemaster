@@ -323,17 +323,6 @@ footer{
   text-align: center;
   position: relative;
 }
-footer p{
-  text-align: left;
-  border: 1px solid #fff;
-  position: absolute;
-  background: #666;
-  bottom: 0;
-  right: 0;
-  transition: .1s;
-  z-index: 1000;
-  
-}
 @media (orientation: landscape){
   header nav{
     flex-direction: row;

@@ -63,4 +63,10 @@ if(gfxLoaded){
   myLayer1.img3(myAtlas[id], angle, x, y, w, h);  // same as img2 but rotated.
 }
 
+////////////
+// Macros //
+////////////
+
+const mapImg = _gfx.mapImg(arr, imgArr, w);     // generates and returns a map macro image
+
 

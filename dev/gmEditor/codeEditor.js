@@ -1,7 +1,7 @@
 // init
 let codePage = 0;
 let codeLine = 0;
-window.codeLineOffset = 6;
+window.codeLineOffset = 8;
 
 // dom
 const domCodePages = document.getElementById('pages-list');
