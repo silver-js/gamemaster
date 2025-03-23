@@ -1,0 +1,38 @@
+  const bCanv = document.createElement('canvas');
+  bCanv.width = 640;
+  bCanv.height = 360;
+  const gl = bCanv.getContext('webgl2');
+  const program = gl.createProgram()
+
+  const vShaderSource = `#version 300 es
+  void main()
+  {
+    gl_Position = vec4(0.0,0.0,0.0,1.0);
+    gl_PointSize = 100.0;
+  }`;
+  const fShaderSource = `#version 300 es
+  precision mediump float;
+  out vec4 fragColor;
+  void main()
+  {
+    fragColor = vec4(1.0,0.0,0.0,1.0);
+  }`;
+
+  const vShader = gl.createShader(gl.VERTEX_SHADER)
+  gl.shaderSource(vShader, vShaderSource);
+  gl.compileShader(vShader);
+  gl.attachShader(program, vShader);
+
+  const fShader = gl.createShader(gl.FRAGMENT_SHADER)
+  gl.shaderSource(fShader, fShaderSource);
+  gl.compileShader(fShader);
+  gl.attachShader(program, fShader);
+
+  gl.linkProgram(program);
+  if(!gl.getProgramParameter(program, gl.LINK_STATUS)){
+    console.log(gl.getShaderInfoLog(vShader))
+    console.log(gl.getShaderInfoLog(fShader))
+  }
+
+  gl.useProgram(program);
+  gl.drawArrays(gl.POINTS,0,1);
