@@ -5,20 +5,6 @@ const domPlayStop = document.getElementById('play-stop-btn');
 const domEditor = document.getElementById('editor-wrapper');
 const domGame = document.getElementById('game-wrapper');
 const gameWindow = document.getElementById('game-iframe');
-const domConsole = document.getElementById('console-log');
-
-let consoleActive = false;
-domConsole.addEventListener('dblclick', (e)=>{
-  consoleActive = !consoleActive;
-  refreshConsole();
-});
-const refreshConsole = ()=>{
-  domConsole.style.width = consoleActive ? '100%' : '12vmin';
-  domConsole.style.height = consoleActive ? '90vh' : '12vmin';
-  domConsole.style.textAlign = consoleActive ? 'left' : 'center';
-  domConsole.innerHTML = consoleActive ? myLog : 'Logs';
-}
-refreshConsole();
 
 
 const integrityCheck = (code)=>{
@@ -52,8 +38,6 @@ const htmlEnd = `
 
 const htmlLogger = `
   console.log = (...args) =>{
-    let newLog = parent.window.myLog + JSON.stringify(args).replace(/\\[|\\]|\\\\n/g,"<br/>");
-    parent.window.myLog = newLog.split("<br/>").splice(-20).join("<br/>");
     parent.console.log(...args);
   }
 `;
@@ -81,8 +65,6 @@ const playPause = ()=>{
   const romCode = db.rom.code.join('\n');
   if(playState){
     console.clear();
-    myLog = '';
-    domConsole.innerHTML = '';
 
     if(integrityCheck(romCode)){
       playRom(romCode);
