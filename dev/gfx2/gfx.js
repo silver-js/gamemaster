@@ -1,8 +1,8 @@
 // DOM setup
 
 const canv = document.getElementById('gm-main');
-const ctx = canv.getContext('2d');
-//const ctx = canv.getContext('2d', {alpha:false});
+//const ctx = canv.getContext('2d');
+const ctx = canv.getContext('2d', {alpha:false});
 canv.width = 640;
 canv.height = 360;
 const checkFlip = ()=>{
