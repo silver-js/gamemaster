@@ -16,26 +16,48 @@ const tSet = {
 
 
 /*--------------------------------------------------------------------------*/
+// to do:
+/*
+- uniforms
+- instanced drawing
+- texture3d
+- normal mapping
+
+// how to:
+setup an intuitive way to use texture3d
+*/
+/*--------------------------------------------------------------------------*/
 
 const layer1 = _gfx.iBuffer();
+
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
+layer1.setAtlas(icons);
 layer1.setAtlas(icons);
 
 /*
-layer1.drawTriangles([
-  0, -.5,   0, 1,
-  .5, .5,      1, 1,
-  1, -.5,    1, 0,
-]);
-layer1.drawTriangles([
-  -.5, -.5,   0, 1,
-  0, .5,      1, 1,
-  .5, -.5,    1, 0,
-]);
-layer1.drawTriangles([
-  -1, -.5,   0, 1,
-  -.5, .5,      1, 1,
-  0, -.5,    1, 0,
-]);
 */
 const makeTile = ()=>{
   return {
@@ -47,13 +69,20 @@ const makeTile = ()=>{
   }
 }
 const tileArr = [];
-for(let i = 0; i < 30; i++){
+for(let i = 0; i < 20; i++){
   tileArr.push(makeTile());
 }
 let anim = 0;
-//setInterval(()=>{anim = (anim + 1) % 4},300);
+setInterval(()=>{anim = (anim + 1) % 4},100);
 
 const draw = ()=>{
+  for(let x = -320; x < 320; x += 32){
+    for(let y = -180; y < 180; y += 32){
+      layer1.sprite(x,y,12+anim);
+    }
+  }
+  
+  //layer1.setAtlas(icons);
   layer1.sprite(0,0,anim)
   layer1.sprite(-320, -180,1);
   tileArr.forEach(n=>{
@@ -62,6 +91,7 @@ const draw = ()=>{
 
     layer1.sprite(n.x, n.y, n.spr + anim);
   });
+  
   _gfx.clear();
   layer1.draw();
   setTimeout(draw, 33)
