@@ -195,23 +195,23 @@ main{
   tab-size: 2;
 }
 
-/* atlas tab */
-#editor-atlas{
+/* atlas tab, fonts tab */
+#editor-atlas, #editor-fonts{
   height: 100%;
 }
-#editor-atlas div.wrapper{
+#editor-atlas div.wrapper, #editor-fonts div.wrapper{
   display: flex;
   flex-direction: column;
   height: 100%;
 }
-#atlas-list{
+#atlas-list, #fonts-list{
   display: flex;
   overflow: scroll;
 }
-#atlas-list::-webkit-scrollbar {
+#atlas-list::-webkit-scrollbar, #fonts-list::-webkit-scrollbar{
   display: none;
 }
-#atlas-list li{
+#atlas-list li, #fonts-list li{
   margin: .4em;
   height: 10em;
   padding: .5em .5em 0 .5em;
@@ -219,15 +219,20 @@ main{
   word-break: break-all;
   font-size: .6em;
 }
+#fonts-list li{
+  min-width: 7em;
+  padding: 1em .2em;
+  height: auto;
+}
 #atlas-list li img{
   display: block;
   height: 8em;
 }
-#editor-atlas div.grow{
+#editor-atlas div.grow, #editor-fonts div.grow{
     overflow-y: scroll;
     height: 100%;
 }
-#editor-atlas p{
+#editor-atlas p, #editor-fonts p{
   text-align: center;
   box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
   margin: .5em;
@@ -260,16 +265,16 @@ main{
   position: relative;
 }
 */
-#editor-atlas canvas{
+#editor-atlas canvas, #editor-fonts canvas{
   box-shadow: 1px 1px 1px #222, -1px -1px 1px #fff;
   image-rendering: pixelated;
 }
-#atlas-canv-a{
+#atlas-canv-a, #fonts-canv-a{
   width: 95%;
   display: block;
   margin: 1em auto;
 }
-#atlas-canv-b{
+#atlas-canv-b, #fonts-canv-b{
   pointer-events: none;
   position: absolute;
   transition: .1s;
@@ -333,21 +338,19 @@ footer{
   #editor-code-container ul{
     display: block;
   }
-  #editor-atlas div.wrapper{
+  #editor-atlas div.wrapper, #editor-fonts div.wrapper{
     flex-direction: row;
   }
-  #atlas-list{
+  #atlas-list, #fonts-list{
     display: block;
   }
-  #atlas-list li{
+  #atlas-list li, #fonts-list li{
     height: auto;
   }
   #atlas-list li img{
     width: 8em;
     height: auto;
   }
-
-
 }
 @keyframes popanim{
   0%{

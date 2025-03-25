@@ -2,6 +2,7 @@
 import './idbManager.js';
 import './codeEditor.js';
 import './atlasEditor.js';
+import './fontsEditor.js';
 import './romPlayer.js';
 
 

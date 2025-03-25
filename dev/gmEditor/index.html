@@ -40,6 +40,9 @@
               <label for="atlas-select">Atlas</label>
             </li>
             <li>
+              <label for="fonts-select">Fonts</label>
+            </li>
+            <li>
               <label for="sfx-select">SFX</label>
             </li>
           </ul>
@@ -69,48 +72,48 @@
             <div class="grow">
               <h4>Nothing Selected</h4>
               <div class="hidden" id="atlas-conf-wrapper">
-                <p id="atlas-file-picker">Pick Image</p>
+                <p class="atlas-new-cfg" id="atlas-file-picker">Pick Image</p>
                 <ul id="atlas-conf">
-                  <li>
+                  <li class="atlas-new-cfg">
                     <h6>Tile Size</h6>
                     <div>
                       <button>-</button><input type="number" value="32" min="2"/><button>+</button>
                     </div>
                   </li>
-                  <li>
-                    <h6>Scale</h6>
-                    <div>
-                      <button>-</button><input type="number" value="1" min="1"/><button>+</button>
-                    </div>
-                  </li>
-                  <li>
+                  <li class="atlas-new-cfg">
                     <h6>X-Offset</h6>
                     <div>
                       <button>-</button><input type="number" value="0"/><button>+</button>
                     </div>
                   </li>
-                  <li>
+                  <li class="atlas-new-cfg">
                     <h6>Y-Offset</h6>
                     <div>
                       <button>-</button><input type="number" value="0"/><button>+</button>
                     </div>
                   </li>
-                  <li>
+                  <li class="atlas-new-cfg">
+                    <h6>Trim-X</h6>
+                    <div>
+                      <button>-</button><input type="number" value="0"/><button>+</button>
+                    </div>
+                  </li>
+                  <li class="atlas-new-cfg">
+                    <h6>Trim-Y</h6>
+                    <div>
+                      <button>-</button><input type="number" value="0"/><button>+</button>
+                    </div>
+                  </li>
+                  <li class="atlas-new-cfg">
                     <h6>H-Margin</h6>
                     <div>
                       <button>-</button><input type="number" value="0"/><button>+</button>
                     </div>
                   </li>
-                  <li>
+                  <li class="atlas-new-cfg">
                     <h6>V-Margin</h6>
                     <div>
                       <button>-</button><input type="number" value="0"/><button>+</button>
-                    </div>
-                  </li>
-                  <li>
-                    <h6>#Columns</h6>
-                    <div>
-                      <button>-</button><input type="number" value="8" min="1"/><button>+</button>
                     </div>
                   </li>
                   <li>
@@ -129,6 +132,22 @@
                 <canvas id="atlas-canv-a"></canvas>
                 <canvas id="atlas-canv-b"></canvas>
                 <p id="atlas-save-btn">Save</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <input class="hidden" id="fonts-select" type="radio" name="editor-select">
+        <article id="editor-fonts">
+          <div class="flex-between wrapper">
+            <ul id="fonts-list">
+            </ul>
+            <div class="grow">
+              <h4>Nothing Selected</h4>
+              <div class="hidden" id="fonts-conf-wrapper">
+                <p id="fonts-file-picker">Pick Image</p>
+                <canvas id="fonts-canv-a"></canvas>
+                <canvas id="fonts-canv-b"></canvas>
+                <p id="fonts-save-btn">Save</p>
               </div>
             </div>
           </div>

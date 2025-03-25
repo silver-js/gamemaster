@@ -1,10 +1,10 @@
 let editName = '';
 let tSize = 32;
 let xOffset = 0;
-let hMargin = 0;
-let tScale = 1;
 let yOffset = 0;
-let tColumns = 8;
+let trimX = 0;
+let trimY = 0;
+let hMargin = 0;
 let vMargin = 0;
 let tAnim = 1;
 let zoom = 2;
@@ -12,6 +12,7 @@ let zoom = 2;
 const domList = document.querySelector('#editor-atlas ul');
 const confTitle = document.querySelector('#editor-atlas h4');
 const confWrapper = document.getElementById('atlas-conf-wrapper');
+const confControls = document.querySelectorAll('.atlas-new-cfg');
 const filePicker = document.getElementById('atlas-file-picker');
 const saveBtn = document.getElementById('atlas-save-btn');
 const canvA = document.getElementById('atlas-canv-a');
@@ -19,6 +20,11 @@ const ctxA = canvA.getContext('2d');
 const canvB = document.getElementById('atlas-canv-b');
 const ctxB = canvB.getContext('2d');
 
+const controlsVisible = (bool)=>{
+  for(let i = 0; i < confControls.length; i++){
+    confControls[i].style.display = bool ? 'block' : 'none';
+  }
+}
 domList.addEventListener('mousewheel', e=>{
   domList.scrollLeft += e.deltaY;
 });
@@ -36,33 +42,39 @@ for(let i = 0; i < confBtns.length; i++){
 const confAll = document.querySelectorAll('#atlas-conf input');
 const refreshConf = ()=>{
   tSize = Number(confAll[0].value);
-  tScale = Number(confAll[1].value);
-  xOffset = Number(confAll[2].value);
-  yOffset = Number(confAll[3].value);
-  hMargin = Number(confAll[4].value);
-  vMargin = Number(confAll[5].value);
-  tColumns = Number(confAll[6].value);
+  xOffset = Number(confAll[1].value);
+  yOffset = Number(confAll[2].value);
+  trimX = Number(confAll[3].value);
+  trimY = Number(confAll[4].value);
+  hMargin = Number(confAll[5].value);
+  vMargin = Number(confAll[6].value);
   tAnim = Number(confAll[7].value);
   zoom = Number(confAll[8].value);
 }
 
 let posX = 0;
 let posY = 0;
-let scaleSize = 16;
 let bW = 16;
-canvA.addEventListener('mousemove', e=>{
+const positionCanvB = (e)=>{
   const rect = e.target.getBoundingClientRect();
   const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  canvB.style.left = x + e.target.offsetLeft - canvB.offsetWidth / 2 + 'px';
-  canvB.style.top = y + e.target.offsetTop - canvB.offsetHeight / 2 +'px';
+  const y = e.clientY - rect.top + e.target.offsetTop;
+  canvB.style.left = `${x < rect.width / 2 ? x : x - canvB.offsetWidth}px`;
+  canvB.style.top = `${e.screenY > window.innerHeight / 2 ? y - canvB.offsetHeight : y}px`;
+}
+canvA.addEventListener('mousemove', e=>{
+  positionCanvB(e);
+  const rect = e.target.getBoundingClientRect();
   
-  const tW = canvA.offsetWidth / tColumns
   bW = canvB.width / 3;
+  
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  
+  const aScale = canvA.offsetWidth * (tSize + 1) / canvA.width;
 
-  posX = Math.floor(x/tW);
-  posY = Math.floor(y/tW);
-  scaleSize = tSize * tScale;
+  posX = Math.floor(x / aScale);
+  posY = Math.floor(y / aScale);
 });
 let showingSecCanvas = false;
 let anim = 0;
@@ -71,17 +83,19 @@ const drawCanvAnim = ()=>{
   if(showingSecCanvas){
     for(let i = 0; i < 3; i++){
       for(let j = 0; j < 3; j++){
-        ctxB.drawImage(canvA, (posX + anim) * (scaleSize + 1), posY * (scaleSize + 1), scaleSize, scaleSize, bW * i, bW * j, bW, bW);
+        ctxB.drawImage(canvA, (posX + anim) * (tSize + 1), posY * (tSize + 1), tSize, tSize, bW * i, bW * j, bW, bW);
       }
     }
   }
 }
 setInterval(drawCanvAnim,150);
 canvA.addEventListener('mouseenter', e=>{
+  positionCanvB(e);
   showingSecCanvas = true;
-  canvB.width = 3 * tSize * zoom;
-  canvB.height = 3 * tSize * zoom;
+  canvB.width = 3 * tSize;
+  canvB.height = 3 * tSize;
   canvB.style.transform = 'scale(1)';
+  canvB.style.width = zoom * 10 + "%";
 });
 canvA.addEventListener('mouseleave', e=>{
   showingSecCanvas = false;
@@ -92,36 +106,33 @@ canvA.addEventListener('mouseleave', e=>{
 const domImg = document.createElement('img');
 const drawOnCanvas = ()=>{
   refreshConf();
-  if(domImg.src === '//:0' || tSize < 4 || tScale < 1 || hMargin <= -tSize || vMargin <= -tSize){
+  if(domImg.src === '//:0' || tSize < 4 || hMargin <= -tSize || vMargin <= -tSize){
     canvA.width = 100;
-    canvA.height = 10;
+    canvA.height = 100;
     return;
   }
-  if(tSize > 1){
-    const scaleSize = tSize * tScale;
-    const tileQtyX = Math.floor((domImg.width - xOffset + hMargin)/(tSize + hMargin))
-    const tileQtyY = Math.ceil((domImg.height - yOffset + vMargin)/(tSize + vMargin));
-    canvA.width = (scaleSize+1) * tColumns;
-    canvA.height = (scaleSize+1) * Math.ceil(tileQtyX * tileQtyY / tColumns);
-    for(let i = 0; i < tileQtyX; i++){
-      for(let j = 0; j < tileQtyY; j++){
-        const canvIndex = j * tileQtyX + i;
-        ctxA.fillStyle = "#000";
-        ctxA.fillRect(
-          (canvIndex % tColumns) * (scaleSize + 1) - 1, Math.floor(canvIndex / tColumns) * (scaleSize + 1) - 1,
-          scaleSize + 2, scaleSize + 2
-        );
-        ctxA.fillStyle = "#f0f";
-        ctxA.fillRect(
-          (canvIndex % tColumns) * (scaleSize + 1), Math.floor(canvIndex / tColumns) * (scaleSize + 1),
-          scaleSize, scaleSize
-        );
-        ctxA.drawImage(
-          domImg,
-          i * (tSize + hMargin) + xOffset, j * (tSize + vMargin) + yOffset, tSize, tSize,
-          (canvIndex % tColumns) * (scaleSize + 1), Math.floor(canvIndex / tColumns) * (scaleSize + 1), scaleSize, scaleSize
-        );
-      }
+  const tQtyX = Math.ceil((domImg.width - xOffset)/(tSize + hMargin)) - trimX;
+  const tQtyY = Math.ceil((domImg.height - yOffset)/(tSize + vMargin)) - trimY;
+  canvA.width = (tSize + 1) * tQtyX;
+  canvA.height = (tSize + 1) * tQtyY;
+  for(let i = 0; i < tQtyX; i++){
+    for(let j = 0; j < tQtyY; j++){
+      const canvIndex = j * tQtyX + i;
+      ctxA.fillStyle = "#000";
+      ctxA.fillRect(
+        (canvIndex % tQtyX) * (tSize + 1) - 1, Math.floor(canvIndex / tQtyX) * (tSize + 1) - 1,
+        tSize + 2, tSize + 2
+      );
+      ctxA.fillStyle = "#f0f";
+      ctxA.fillRect(
+        (canvIndex % tQtyX) * (tSize + 1), Math.floor(canvIndex / tQtyX) * (tSize + 1),
+        tSize, tSize
+      );
+      ctxA.drawImage(
+        domImg,
+        i * (tSize + hMargin) + xOffset, j * (tSize + vMargin) + yOffset, tSize, tSize,
+        (canvIndex % tQtyX) * (tSize + 1), Math.floor(canvIndex / tQtyX) * (tSize + 1), tSize, tSize
+      );
     }
   }
 }
@@ -144,26 +155,27 @@ const updateAtlas = ()=>{
 domList.addEventListener('click', e=>{
   if(e.target.value == -1){
     confTitle.innerText = 'Creating new tileset:';
+    saveBtn.innerText = 'Save';
     confWrapper.classList.remove('hidden');
+    controlsVisible(true);
     editName = '';
     domImg.src = "//:0";
     drawOnCanvas();
     return;
   }
   if(e.target.alt != undefined){
-      confTitle.innerText = `Editing ${e.target.alt} tileset`;
-      confWrapper.classList.remove('hidden');
-      editName = e.target.alt;
-      domImg.src = e.target.src;
-      confAll[0].value = db.rom.atlas[e.target.alt].tileSize;
-      confAll[1].value = db.rom.atlas[e.target.alt].scale;
-      confAll[2].value = db.rom.atlas[e.target.alt].offsetX;
-      confAll[3].value = db.rom.atlas[e.target.alt].offsetY;
-      confAll[4].value = db.rom.atlas[e.target.alt].hMargin;
-      confAll[5].value = db.rom.atlas[e.target.alt].vMargin;
-      confAll[6].value = db.rom.atlas[e.target.alt].tColumns;
-      drawOnCanvas();
+    confTitle.innerText = `Viewing '${e.target.alt}' atlas`;
+    confWrapper.classList.remove('hidden');
+    saveBtn.innerText = 'Rename'
+    editName = e.target.alt;
+    domImg.src = e.target.src;
+    confAll[0].value = db.rom.atlas[e.target.alt].tileSize;
+    for(let i = 1; i < 7; i++){
+      confAll[i].value = 0;
     }
+    controlsVisible(false);
+    drawOnCanvas();
+  }
 });
 domList.addEventListener('contextmenu', e=>{
   e.preventDefault()
@@ -189,32 +201,56 @@ filePicker.addEventListener('click', e=>{
   }
   input.click();
 })
+
+const generateAtlas = ()=>{
+  const tQtyX = Math.ceil((domImg.width - xOffset)/(tSize + hMargin)) - trimX;
+  const tQtyY = Math.ceil((domImg.height - yOffset)/(tSize + vMargin)) - trimY;
+  canvA.width = tSize * tQtyX;
+  canvA.height = tSize * tQtyY;
+  for(let i = 0; i < tQtyX; i++){
+    for(let j = 0; j < tQtyY; j++){
+      const canvIndex = j * tQtyX + i;
+      ctxA.drawImage(
+        domImg,
+        i * (tSize + hMargin) + xOffset, j * (tSize + vMargin) + yOffset, tSize, tSize,
+        (canvIndex % tQtyX) * tSize, Math.floor(canvIndex / tQtyX) * tSize, tSize, tSize
+      );
+    }
+  }
+  return canvA.toDataURL();
+}
 saveBtn.addEventListener('click', ()=>{
   if(domImg.src){
     const atlasName = prompt('Atlas name:', editName);
-    if(atlasName){
-      if(editName !== ''){
-        delete db.rom.atlas[editName];
-        db.deleteEntry('atlas', editName);
-      }
-      db.rom.atlas[atlasName] = {
-        src: domImg.src,
-        tileSize: tSize,
-        offsetX: xOffset,
-        hMargin,
-        scale: tScale,
-        offsetY: yOffset,
-        tColumns,
-        vMargin,
-      }
-      updateAtlas()
-      db.updateRom('atlas', atlasName);
-      confWrapper.classList.add('hidden');
-      confTitle.innerText = 'Nothing Selected';
-      editName = '';
-      domImg.src = "//:0";
-      drawOnCanvas();
+    const regEx = /^\d|[\s\.\-\(\)\[\]\{\},$!]/g
+    if(!atlasName.length || atlasName.match(regEx)){
+      alert(`Invalid Name:\n It can only contain numbers, characters and "_" and can't start with a number`);
+      return;
     }
+    if(db.rom.fonts[atlasName]){
+      alert(`"${atlasName}" already exists as a font variable!`);
+      return;
+    }
+    if(db.rom.atlas[atlasName] && atlasName !== editName){
+      alert(`"${atlasName}" already exists!`);
+      return;
+    }
+    if(editName !== ''){
+      delete db.rom.atlas[editName];
+      db.deleteEntry('atlas', editName);
+    }
+    const dataUri = generateAtlas()
+    db.rom.atlas[atlasName] = {
+      src: dataUri,
+      tileSize: tSize,
+    }
+    updateAtlas()
+    db.updateRom('atlas', atlasName);
+    confWrapper.classList.add('hidden');
+    confTitle.innerText = 'Nothing Selected';
+    editName = '';
+    domImg.src = "//:0";
+    drawOnCanvas();
   }
 });
 

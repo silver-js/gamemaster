@@ -7,6 +7,7 @@ window.db  = {
     code: [''],
     maps: [],
     atlas: {},
+    fonts: {},
     sfx: [],
   },
   loaderFunctions: [],
@@ -56,11 +57,18 @@ const loadRomDB = ()=>{
       });
       const cQuery = getAllData('atlas');
       cQuery.onsuccess = ()=>{
-      const cRes = cQuery.result;
+        const cRes = cQuery.result;
         cRes.forEach(n=>{
           db.rom.atlas[n.id] = n.value;
         });
-        db.onload();
+        const dQuery = getAllData('fonts');
+        dQuery.onsuccess = ()=>{
+          const dRes = dQuery.result;
+          dRes.forEach(n=>{
+            db.rom.fonts[n.id] = n.value;
+          });
+          db.onload();
+        }
       }
     }
   }
@@ -80,6 +88,7 @@ dbRequest.onupgradeneeded = e=>{
 
   res.createObjectStore("maps", {keyPath: 'id'});
   res.createObjectStore("atlas", {keyPath: 'id'});
+  res.createObjectStore("fonts", {keyPath: 'id'});
   res.createObjectStore("sfx", {keyPath: 'id'});
   console.log('database created...');
 }
