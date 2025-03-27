@@ -1,5 +1,11 @@
 import _gfx from './gfx.js';
-
+let fps = 0;
+setInterval(()=>{
+  if(playState){
+    console.log(fps + ' fps');
+    fps = 0;
+  }
+},1000)
 /*
   Some test data! 
 */
@@ -31,7 +37,7 @@ setup an intuitive way to use texture3d
 */
 /*--------------------------------------------------------------------------*/
 
-const layer1 = _gfx.iBuffer();
+const layer1 = _gfx.spriteLayer();
 
 layer1.setAtlas(pxFont);
 /*
@@ -46,32 +52,36 @@ const makeTile = ()=>{
   }
 }
 const tileArr = [];
-for(let i = 0; i < 1000; i++){
+for(let i = 0; i < 5000; i++){
   tileArr.push(makeTile());
 }
 let anim = 0;
 setInterval(()=>{anim = (anim + 1) % 4},100);
-
+document.querySelector('button').addEventListener('click', ()=> playState = !playState);
+let playState = false;
 const draw = ()=>{
-  for(let x = -320; x < 320; x += 32){
-    for(let y = -180; y < 180; y += 32){
-      layer1.sprite(x,y,12+anim);
+  if(playState){
+    for(let x = -320; x < 320; x += 32){
+      for(let y = -180; y < 180; y += 32){
+        layer1.sprite(x,y,12+anim);
+      }
     }
-  }
-  
-  //layer1.setAtlas(icons);
-  layer1.sprite(0,0,anim)
-  layer1.sprite(-320, -180,1);
-  tileArr.forEach(n=>{
-    n.x = ((n.x + 960 + n.sx) % 640) - 320;
-    n.y = ((n.y + 540 + n.sy) % 360) - 180;
 
-    layer1.sprite(n.x, n.y, n.spr + anim);
-  });
-  
-  _gfx.clear();
-  layer1.draw();
-  requestAnimationFrame(draw)
+    //layer1.setAtlas(icons);
+    layer1.sprite(0,0,anim)
+    layer1.sprite(-320, -180,1);
+    tileArr.forEach(n=>{
+      n.x = ((n.x + 960 + n.sx) % 640) - 320;
+      n.y = ((n.y + 540 + n.sy) % 360) - 180;
+
+      layer1.sprite(n.x, n.y, n.spr + anim);
+    });
+
+    _gfx.clear();
+    layer1.draw();
+    fps++;
+  }
+  setTimeout(draw)
 }
 draw();
 
