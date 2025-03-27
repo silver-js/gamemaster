@@ -127,11 +127,11 @@ const iBuffer = ()=>{
       textImg.onload = ()=>{
         const w = textImg.width;
         const h = textImg.height;
-        atlasStepX = (atlas.tileSize + atlas.hMargin) / w;
-        atlasStepY = (atlas.tileSize + atlas.vMargin) / h;
+        atlasStepX = atlas.tileSize / w;
+        atlasStepY = atlas.tileSize / h;
         atlasW = atlas.tileSize / w;
         atlasH = atlas.tileSize / h;
-        atlasColumns = atlas.tColumns;
+        atlasColumns = Math.floor(w / atlasW);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textImg);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -161,7 +161,6 @@ const iBuffer = ()=>{
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       sprBuffer = [];
     }
-    
   }
   /*
   bCtx.imageSmoothingEnabled = false;
