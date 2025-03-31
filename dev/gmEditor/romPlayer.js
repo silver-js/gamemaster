@@ -37,8 +37,10 @@ const htmlEnd = `
 }catch(_e){console.log(_e.stack);}</script></html>`
 
 const htmlLogger = `
-  console.log = (...args) =>{
-    parent.console.log(...args);
+  for(let key in console){
+    console[key] = (...args) =>{
+      parent.console[key](...args);
+    }
   }
 `;
 

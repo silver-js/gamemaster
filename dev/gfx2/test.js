@@ -86,9 +86,6 @@ const draw = ()=>{
 draw();
 
 /*
-const layer1 = gfx.iBuffer();
-const layer2 = gfx.iBuffer();
-const layer3 = gfx.sBuffer();
 let loaded = false;     // since sprites are loaded asyncronously, you should have a loading state.
 
 

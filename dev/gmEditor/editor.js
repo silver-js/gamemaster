@@ -67,10 +67,9 @@ document.getElementById('project-load-btn').addEventListener('click', e=>{
         try{
           var content = readerEvent.target.result; // this is the content!
           const loadedRom = JSON.parse(content);
-          console.log(loadedRom);
-          if(Array.isArray(loadedRom.code) && Array.isArray(loadedRom.maps) && typeof loadedRom.atlas == "object" && Array.isArray(loadedRom.sfx)){
-            db.rom = loadedRom;
-            db.onload();
+          //console.log(loadedRom);
+          if(Array.isArray(loadedRom.code) && typeof loadedRom.atlas == "object"){
+            db.loadRom(loadedRom);
             return
           }
           alert('Invalid ROM data!');

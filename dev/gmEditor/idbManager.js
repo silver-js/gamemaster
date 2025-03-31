@@ -40,6 +40,17 @@ const deleteData = (store, x) =>{
   const storeData = tx.objectStore(store);
   storeData.delete(x);
 }
+const clearStore = async (store) =>{
+  const p = new Promise(res=>{
+    const tx = idb.transaction(store, 'readwrite');
+    tx.onerror = e => console.log(`ERROR loading '${store}' store.`, e.target.error);
+    const storeData = tx.objectStore(store);
+    const req = storeData.clear();
+    req.onsuccess = ()=>{
+      res(true);
+    }
+  });
+}
 
 //// <-- idb rom load --> ////
 const loadRomDB = ()=>{
@@ -75,40 +86,62 @@ const loadRomDB = ()=>{
 }
 
 //// <-- indexedDB --> ////
-const dbRequest = indexedDB.open("rom");
-dbRequest.onupgradeneeded = e=>{
-  const res = e.target.result;
-  const dataStore = res.createObjectStore("game_data", {keyPath: 'key'});
-  dataStore.put({key:"name", value: 'unnamed game'});
-  dataStore.put({key:"author", value: 'anonymus'});
-  dataStore.put({key:"version", value: 0.1});
-  
-  const codeStore = res.createObjectStore("code", {keyPath: 'id'});
-  codeStore.put({id: 0, value: ''});
 
-  res.createObjectStore("maps", {keyPath: 'id'});
-  res.createObjectStore("atlas", {keyPath: 'id'});
-  res.createObjectStore("fonts", {keyPath: 'id'});
-  res.createObjectStore("sfx", {keyPath: 'id'});
-  console.log('database created...');
-}
-dbRequest.onsuccess = e=>{
-  idb = e.target.result;
-  loadRomDB();
-}
-dbRequest.onerror = e=>{
-  console.log('ERROR:', e.target.error);
-}
+const startDb = new Promise(res=>{
+  const dbRequest = indexedDB.open("rom");
+    dbRequest.onupgradeneeded = e=>{
+    const res = e.target.result;
+    const dataStore = res.createObjectStore("game_data", {keyPath: 'key'});
+    dataStore.put({key:"name", value: 'unnamed game'});
+    dataStore.put({key:"author", value: 'anonymus'});
+    dataStore.put({key:"version", value: 0.1});
+  
+    const codeStore = res.createObjectStore("code", {keyPath: 'id'});
+    codeStore.put({id: 0, value: ''});
+
+    res.createObjectStore("maps", {keyPath: 'id'});
+    res.createObjectStore("atlas", {keyPath: 'id'});
+    res.createObjectStore("fonts", {keyPath: 'id'});
+    res.createObjectStore("sfx", {keyPath: 'id'});
+    console.log('database created...');
+  }
+  dbRequest.onsuccess = e=>{
+    idb = e.target.result;
+    loadRomDB();
+    res(true);
+  }
+  dbRequest.onerror = e=>{
+    console.log('ERROR:', e.target.error);
+    res(false);
+  }
+});
+startDb
+
+
 
 // <-- Data Update --> //
 
 db.updateData = (k)=>{
   putData('game_data', {key: k, value: db.rom[k]});
-  console.log(k, db.rom[k])
 }
 db.updateRom = (list, id)=>{
   putData(list, {id, value: db.rom[list][id]});
 }
 db.deleteEntry = (list, id)=>{
   deleteData(list, id);
+}
+db.loadRom = async(r)=>{
+  db.rom = r;
+  db.updateData('author');
+  db.updateData('name');
+  db.updateData('version');
+  await clearStore('code');
+  for(let i = 0; i < db.rom.code.length; i++){
+    db.updateRom('code', i);
+  }
+  await clearStore('atlas');
+  for(let key in db.rom.atlas){
+    db.updateRom('atlas', key);
+  }
+  location.reload();
 }
