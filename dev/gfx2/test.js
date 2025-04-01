@@ -1,5 +1,6 @@
 import _gfx from './gfx.js';
 let fps = 0;
+let playState = true;
 setInterval(()=>{
   if(playState){
     console.log(fps + ' fps');
@@ -37,11 +38,88 @@ setup an intuitive way to use texture3d
 */
 /*--------------------------------------------------------------------------*/
 
+const deg = Math.PI / 4;
 const layer1 = _gfx.spriteLayer();
+const objArr = [];
+const arrLength = 500;
+for(let i = 0; i < arrLength; i ++){
+  objArr.push({
+    x: Math.random() * 640 - 320,
+    y: Math.random() * 360 - 180,
+    w: 8 + Math.random() * 56,
+    h: 8 + Math.random() * 56,
+    spin: Math.random() * 360
+  });
+}
+const stressLoop = ()=>{
+  fps++;
+  let o;
+  for(let i = 0; i < arrLength; i++){
+    o = objArr[i];
+    o.x = (o.x + 960 + Math.sin(i/deg)) % 640 - 320;
+    o.y = (o.y + 540 + Math.cos(i/deg)) % 360 - 180;
+    o.spin += (i % 2) * 2 - 1;
+    layer1.spr(0,0, o.x, o.y, o.w, o.h, o.spin);
+  }
+  layer1.spr(
+    0, 0,    // atlasId, spriteId
+    128, 0,    // x, y
+    64, 64,  // width, height (optional)
+    45, 45,  // rotation X (optional), rotation Y optional
+    1, .5     // scaleX, scaleY
+  );
+  layer1.spr(
+    0, 0,    // atlasId, spriteId
+    -128, 0,    // x, y
+    64, 64,  // width, height (optional)
+  );
+  layer1.spr(
+    0, 0,    // atlasId, spriteId
+    0, 0,    // x, y
+    64, 64,  // width, height (optional)
+    45
+  );
+  layer1.color(0,0,0,255)
+  for(let i = 0; i < arrLength; i++){
+    layer1.lines(Math.random() * 640 - 320, Math.random()*360 - 180, Math.random() * 640 - 320, Math.random()*360 - 180);
+  }
 
-layer1.setAtlas(pxFont);
+  layer1.color(128,0,128,128)
+  for(let i = 0; i < arrLength; i++){
+    layer1.rect(Math.random() * 640 - 320, Math.random()*360 - 180, Math.random()*64, Math.random()*64);
+  }
+  
+  layer1.color(128,0,128,128)
+  for(let i = 0; i < arrLength; i++){
+    layer1.text('some text', Math.random() * 640 - 320, Math.random()*360 - 180);
+  }
+
+  layer1.draw();
+  setTimeout(stressLoop);
+};
+
+
+const testLoop = ()=>{
+  layer1.text('hello world', 0,0);
+  layer1.draw();
+  setTimeout(testLoop);
+}
+
+
+//stressLoop();
+testLoop();
+
+
+
+
+
+
+
+
+
+
 /*
-*/
+layer1.setAtlas(pxFont);
 const makeTile = ()=>{
   return {
   x: Math.random() * 640 - 320,
@@ -85,6 +163,7 @@ const draw = ()=>{
 }
 draw();
 
+*/
 /*
 let loaded = false;     // since sprites are loaded asyncronously, you should have a loading state.
 

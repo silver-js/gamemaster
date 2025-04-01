@@ -38,11 +38,9 @@ const spriteLayer = ()=>{
   gl.imageSmoothingEnabled = false;
   gl.webkitImageSmoothingEnabled = false;
   gl.mozImageSmoothingEnabled = false;
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   /* ---------- TESTING ----------- */
 
-  gl.clearColor(0.0,.0,.0,1.0);
+  gl.clearColor(0.2,.2,.2,1.0);
   
   const modelData = new Float32Array([
     -.5, -.5,
@@ -76,41 +74,8 @@ const spriteLayer = ()=>{
 
     uniform vec2 pxScale;
     
-    out vec4 fData;
-    out float fType;    
-
+    out vec3 texCoords;
     void main(){
-      gl_Position = vec4(vec2(
-        vertPos * sprSize * vec2(cos(spin.x * rad), cos(spin.y * rad)) + vec2(-vertPos.y * sprSize.y * sin(spin.y * rad), vertPos.x * sprSize.x * sin(spin.x * rad)) + spritePos / scale
-      ) * pxScale * scale, 0.0, 1.0);
-      fData = data;
-      fType = type;
-    }
-  `;
-  const fragmentTxt = `#version 300 es
-    precision mediump float;
-    
-    in vec4 fData;
-    in float fType;
-    out vec4 outputColor;
-    
-    vec4 fColor;
-    
-    void main(){
-      if(fType == 0.0){
-        fColor = fData;
-      }else if(fType == 1.0){
-        fColor = vec4(fData.x / 256.0,0.0,0.0,.5);
-      }else if(fType == 2.0){
-        fColor = vec4(1.0,1.0,1.0,1.0);
-      }else{
-        fColor = vec4(.5,1.0,.5,1.0);
-      }
-      outputColor = vec4(fColor);
-    }
-  `;
-  /*
-
       if(type == 0.0)
       {
         texCoords = vec3(vertPos, 1.0);
@@ -125,8 +90,32 @@ const spriteLayer = ()=>{
       else{
         texCoords = vec3(1.0, 0.0, 0.0);
       }
-
+      gl_Position = vec4(vec2(
+        vertPos * sprSize * vec2(cos(spin.x * rad), cos(spin.y * rad)) + vec2(-vertPos.y * sprSize.y * sin(spin.y * rad), vertPos.x * sprSize.x * sin(spin.x * rad)* scaleY) + spritePos
+      ) * pxScale, 0.0, 1.0);
+    }
+  `;
+  /*
+      gl_Position = vec4(
+        (
+          vec2(
+              vertPos.x * sprSize.x * cos(spin.x * rad) - vertPos.y * sprSize.y * sin(spin.y * rad) * scale.x,
+              (vertPos.x * sprSize.x * sin(spin.x * rad) + vertPos.y * sprSize.y * cos(spin.y * rad)
+          ) + vec2(spritePos)
+        ) * pxScale, 0.0, 1.0
+      );
   */
+  const fragmentTxt = `#version 300 es
+    precision mediump float;
+    
+    in vec3 texCoords;
+    out vec4 outputColor;
+
+    void main(){
+      outputColor = vec4(texCoords.x * 16.0, texCoords.y * 16.0, 1.0,1.0);
+    }
+  `;
+  
   const vShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vShader, vertexTxt);
   gl.compileShader(vShader);
@@ -152,13 +141,11 @@ const spriteLayer = ()=>{
   gl.enableVertexAttribArray(3);
   gl.enableVertexAttribArray(4);
   gl.enableVertexAttribArray(5);
-  gl.enableVertexAttribArray(6);
   gl.vertexAttribDivisor(1,1);
   gl.vertexAttribDivisor(2,1);
   gl.vertexAttribDivisor(3,1);
   gl.vertexAttribDivisor(4,1);
   gl.vertexAttribDivisor(5,1);
-  gl.vertexAttribDivisor(6,1);
   
   // uniforms
   const pxScaleLocation = gl.getUniformLocation(triangleProgram, 'pxScale');
@@ -237,33 +224,10 @@ const spriteLayer = ()=>{
   }
 
   /* ---------- TESTING ----------- */
-  let clr = [1,1,0,1];
-  let lineWidth = 2;
+  
   return {
-    color: (r,g,b,a)=>{
-      clr = [r/255, g/255, b/255, a/255];
-    },
-    lines: (...args)=>{
-      for(let i = 0; i < args.length - 2; i+=2){
-        let a = args[i+2] - args[i];
-        let o = args[i+3] - args[i+1];
-        let h = Math.sqrt(a**2 + o**2);
-        let spin = -Math.asin(a/h) / deg;
-        spriteArr.push(args[i] + a / 2, args[i + 1] + o / 2 , lineWidth, h , spin, spin, 1, 1, 0, ...clr);
-      }
-    },
-    rect: (x, y, w, h, sX = 0, sY, scaleX = 1, scaleY = 1)=>{
-      spriteArr.push(x, y, w, h, sX, sY != undefined ? sY : sX, scaleX, scaleY, 0, ...clr);
-    },
-    text: (txt, x, y, w, h, sX = 0, sY, scaleX = 1, scaleY = 1) =>{
-      let lineOffset = 0;
-      for(let i = 0; i < txt.length; i++){
-        spriteArr.push(x + lineOffset, y, w = 16, h = 16, sX, sY != undefined ? sY : sX, scaleX, scaleY, 1, txt.charCodeAt(i) - 32, 0, 0,.5);
-        lineOffset += 16;
-      }
-    },
     spr: (aId, iId, x, y, w = 32, h = 32, sX = 0, sY, scaleX = 1, scaleY = 1)=>{
-      spriteArr.push(x, y, w, h, sX, sY != undefined ? sY : sX, scaleX, scaleY, 2, 1, 0, 1, 1);
+      spriteArr.push(x, y, w, h, sX, sY != undefined ? sY : sX, scaleX, scaleY, 2, aId, iId, 0, 0);
     },
     draw: ()=>{
       drawSprites(spriteArr)
