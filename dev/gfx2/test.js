@@ -38,10 +38,17 @@ setup an intuitive way to use texture3d
 */
 /*--------------------------------------------------------------------------*/
 
+
+
 const deg = Math.PI / 4;
 const layer1 = _gfx.spriteLayer();
+
+
+layer1.localFont(0, 'verdana');
+
+
 const objArr = [];
-const arrLength = 500;
+const arrLength = 5;
 for(let i = 0; i < arrLength; i ++){
   objArr.push({
     x: Math.random() * 640 - 320,
@@ -95,7 +102,7 @@ const stressLoop = ()=>{
   }
 
   layer1.draw();
-  setTimeout(stressLoop);
+  setTimeout(stressLoop,300);
 };
 
 
@@ -106,8 +113,8 @@ const testLoop = ()=>{
 }
 
 
-//stressLoop();
-testLoop();
+stressLoop();
+//testLoop();
 
 
 

@@ -40,19 +40,10 @@ const spriteLayer = ()=>{
   gl.mozImageSmoothingEnabled = false;
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  /* ---------- TESTING ----------- */
 
-  gl.clearColor(0.0,.0,.0,1.0);
+  gl.clearColor(0.2,.2,.2,1.0);
   
-  const modelData = new Float32Array([
-    -.5, -.5,
-    -.5, .5,
-    .5, .5,
-    .5, .5,
-    .5, -.5,
-    -.5, -.5
-  ]);
-
+  const modelData = new Float32Array([-.5, -.5, -.5, .5, .5, .5, .5, .5, .5, -.5, -.5, -.5]);
   const modelBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, modelBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, modelData, gl.STATIC_DRAW);
@@ -76,8 +67,9 @@ const spriteLayer = ()=>{
 
     uniform vec2 pxScale;
     
+    out vec2 texCoord;
     out vec4 fData;
-    out float fType;    
+    out float fType;
 
     void main(){
       gl_Position = vec4(vec2(
@@ -85,10 +77,14 @@ const spriteLayer = ()=>{
       ) * pxScale * scale, 0.0, 1.0);
       fData = data;
       fType = type;
+      texCoord = vertPos;
     }
   `;
   const fragmentTxt = `#version 300 es
     precision mediump float;
+    
+    in vec2 texCoord;
+    uniform sampler2D uSampler;
     
     in vec4 fData;
     in float fType;
@@ -106,27 +102,10 @@ const spriteLayer = ()=>{
       }else{
         fColor = vec4(.5,1.0,.5,1.0);
       }
-      outputColor = vec4(fColor);
+      outputColor = texture(uSampler, vec2(texCoord.x + .5, texCoord.y + .5));
     }
   `;
-  /*
 
-      if(type == 0.0)
-      {
-        texCoords = vec3(vertPos, 1.0);
-      }
-      else if(type == 1.0)
-      {
-        texCoords = vec3(0.0, 0.0, 1.0);
-      }
-      else if(type == 2.0){
-        texCoords = vec3(0.0, 1.0, 1.0);
-      }
-      else{
-        texCoords = vec3(1.0, 0.0, 0.0);
-      }
-
-  */
   const vShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vShader, vertexTxt);
   gl.compileShader(vShader);
@@ -232,16 +211,84 @@ const spriteLayer = ()=>{
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);
 
-    gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, Math.floor(arr.length / 6));
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, Math.floor(arr.length / 13));
     ctx.drawImage(sCanv,0,0);
   }
+/////////////////////////////////////////////////////////////////
+  
+  // sprites loader
 
-  /* ---------- TESTING ----------- */
-  let clr = [1,1,0,1];
+  const loaderCanvas = document.createElement('canvas');
+  loaderCanvas.width = 300;
+  loaderCanvas.height = 300;
+  const loaderCtx = loaderCanvas.getContext('2d');
+  document.body.appendChild(loaderCanvas);
+  loaderCtx.fillStyle = '#ff0';
+  loaderCtx.fillRect(0,0,150,150);
+  loaderCtx.fillStyle = '#f0f';
+  loaderCtx.fillRect(150,0,150,150);
+  loaderCtx.fillStyle = '#0ff';
+  loaderCtx.fillRect(0,150,150,150);
+  loaderCtx.fillStyle = '#00f';
+  loaderCtx.fillRect(150,150,150,150);
+
+  const loadTexture = (img) =>{
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  }
+
+  loadTexture(loaderCanvas);
+
+
+// font
+const fontStrArr = [];
+for(let i = 0; i< 95; i++){
+  fontStrArr.push(String.fromCharCode(32 + i));
+}
+
+const loadExternalFont = (id, fontdata)=>{
+
+}
+const loadFont = (id, font)=>{
+    let tSize = 64;
+    loaderCanvas.height = tSize;
+    loaderCanvas.width = tSize;
+    loaderCtx.font = `${tSize}px ${font}`;
+    loaderCtx.filter = "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxmaWx0ZXIgaWQ9ImZpbHRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj48ZmVDb21wb25lbnRUcmFuc2Zlcj48ZmVGdW5jUiB0eXBlPSJpZGVudGl0eSIvPjxmZUZ1bmNHIHR5cGU9ImlkZW50aXR5Ii8+PGZlRnVuY0IgdHlwZT0iaWRlbnRpdHkiLz48ZmVGdW5jQSB0eXBlPSJkaXNjcmV0ZSIgdGFibGVWYWx1ZXM9IjAgMSIvPjwvZmVDb21wb25lbnRUcmFuc2Zlcj48L2ZpbHRlcj48L3N2Zz4=#filter)";
+
+    loaderCtx.imageSmoothingEnabled = false;
+    loaderCtx.webkitImageSmoothingEnabled = false;
+    loaderCtx.mozImageSmoothingEnabled = false;
+    loaderCtx.textBaseline = 'bottom';
+    loaderCtx.fillStyle = `#fff`;
+    fontStrArr.forEach((n, i)=>{
+      loaderCtx.clearRect(0,0,80,80);
+      loaderCtx.fillText(n, 0, tSize);
+    });
+    loadTexture(loaderCanvas);
+  }
+  
+  
+
+
+
+
+
+  /////////////////////////////////////////////////////////////////
+  let clr = [1,1,1,1];
   let lineWidth = 2;
   return {
-    color: (r,g,b,a)=>{
+    color: (r,g,b,a = 255)=>{
       clr = [r/255, g/255, b/255, a/255];
+    },
+    localFont: (id, font)=>{
+      loadFont(id, font);
     },
     lines: (...args)=>{
       for(let i = 0; i < args.length - 2; i+=2){
@@ -274,7 +321,14 @@ const spriteLayer = ()=>{
 }
 
 
-// sprites loader
+
+
+
+
+//--------------------------------------------------------------------------------------------
+
+
+
 
 const loadAtlas = async(url, res, scale = 1, ox = 0, oy = 0, hGap = 0, vGap = 0)=>{
   const aImg = new Image();
