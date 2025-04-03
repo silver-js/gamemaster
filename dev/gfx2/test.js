@@ -10,9 +10,9 @@ setInterval(()=>{
 /*
   Some test data! 
 */
-const waterTileset = {
-  src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAYAAAAe2bNZAAADLklEQVRYCc2YgXHbMAxFZZ0nkVfpCu0I7QoZISu0I6QrZBVpFRcf4qMgiqR1TXJn3sUEgY8PEIQpOZdh+n0femP5NRimhxiGT8Jcp+HbLtAyvO/WWoApbZv+4JJ9sCwIgQ8VvFcEDARgLRIwR9uWeM8GFxj4Sv0VBXMJRK/5f21wtPzRjwCfYfaeITMSopxa65j26+1oZJeNfog42Upe6Rg1rPdMzYCT5kjawkofcfKL2DOb8p4pSUTUGi1sTV/qynWMIdvFFP17Jnp8sXzlQvOSvtqRvLynPki9ES40MJ7Ty5qZ7zZgpJ1e7e4yu2z5+AqM43THWUyw+dvkpEYgIkjimcsZjBJ2EiMqMY5L9pyIlI0Bl7BjJCOY70xVSrdxifG1dk5StUCqnHZtI/qvmvWTTaMb5RDBJKTSeVJCVjCZSEErAx4qXYFkFZsaEcqEIMMjB0dhs3SOMzn6A4GDTQlT4iKvH1MtIRESaFclIpVzql4tmPx9GIbgEUfSI8aSu7buYlOP1DAeTIQcfUiKOMJs36bwDQDA7GQQoSxmYVRheiTuHCg8MamIe65Lb5pmEl9nK2E+YxOX5TbsMIVdTgeMlAXugJFdg34yMR+TGzACzMogpN4Imrr4CCc7mBTvmIyoAdXDbPZe0md4wKR49WQAEYw5Jhd3FvWlHDdW4wFvOL+BWR9mEWlEwlWzfYJ5EGhzaEtjN1D06yUk3CP7Ccx6TGeIYmIt+YM8W8+cIfoMTIfjyS69t3TpKWMNNSKyiX5ZncUEP1FFrjM83sA8tZ2g8iG7/uZ5cuv8fdq9PuDizx4WNpe8j3i8Z/SwwpE5cOZ3kNvf9RfS7bb4A5H3FMdaVXhI4ht5peOh2OLJDQxwRxDuDrfrGNCZfEg8JUQFYwKSNXo8l+ltvqvsl9ufFZh6Jpfc3uoNs+ujXS/oPbmFUXRtwEbumbR2ZehPxfOeUdnv88/8ZieDduC7EFF618k7FqERgRMxfSTZh2HwQ8W6xZOPiT6QA2dPdZSU9KpeJkoRwGR/VSoN/Dha1i2ew79EnMd2RXMuP1ZmJ7JANJ/KX2KijuORH4NKaq7x/APfwLLNJHaa/AAAAABJRU5ErkJggg==",
-  tileSize: 8,
+const roomImg = {
+  data: "data:image/png;base64,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",
+  tileSize: 32
 }
 
 const tSet = {
@@ -41,14 +41,12 @@ setup an intuitive way to use texture3d
 
 
 const deg = Math.PI / 4;
-const layer1 = _gfx.spriteLayer();
 
-
-layer1.localFont(0, 'verdana');
-
+_gfx.loadAtlas(0, roomImg.data, 32);
+_gfx.res(4)
 
 const objArr = [];
-const arrLength = 5;
+const arrLength = 500;
 for(let i = 0; i < arrLength; i ++){
   objArr.push({
     x: Math.random() * 640 - 320,
@@ -66,55 +64,97 @@ const stressLoop = ()=>{
     o.x = (o.x + 960 + Math.sin(i/deg)) % 640 - 320;
     o.y = (o.y + 540 + Math.cos(i/deg)) % 360 - 180;
     o.spin += (i % 2) * 2 - 1;
-    layer1.spr(0,0, o.x, o.y, o.w, o.h, o.spin);
+    _gfx.spr(0,0, o.x, o.y, o.w, o.h, o.spin);
   }
-  layer1.spr(
+  _gfx.spr(
     0, 0,    // atlasId, spriteId
     128, 0,    // x, y
     64, 64,  // width, height (optional)
     45, 45,  // rotation X (optional), rotation Y optional
     1, .5     // scaleX, scaleY
   );
-  layer1.spr(
+  _gfx.spr(
     0, 0,    // atlasId, spriteId
     -128, 0,    // x, y
     64, 64,  // width, height (optional)
   );
-  layer1.spr(
+  _gfx.spr(
     0, 0,    // atlasId, spriteId
     0, 0,    // x, y
     64, 64,  // width, height (optional)
     45
   );
-  layer1.color(0,0,0,255)
+  _gfx.color(0,0,0,255)
   for(let i = 0; i < arrLength; i++){
-    layer1.lines(Math.random() * 640 - 320, Math.random()*360 - 180, Math.random() * 640 - 320, Math.random()*360 - 180);
+    _gfx.lines(Math.random() * 640 - 320, Math.random()*360 - 180, Math.random() * 640 - 320, Math.random()*360 - 180);
   }
 
-  layer1.color(128,0,128,128)
+  _gfx.color(128,0,128,128)
   for(let i = 0; i < arrLength; i++){
-    layer1.rect(Math.random() * 640 - 320, Math.random()*360 - 180, Math.random()*64, Math.random()*64);
+    _gfx.rect(Math.random() * 640 - 320, Math.random()*360 - 180, Math.random()*64, Math.random()*64);
   }
   
-  layer1.color(128,0,128,128)
+  _gfx.color(128,0,128,128)
   for(let i = 0; i < arrLength; i++){
-    layer1.text('some text', Math.random() * 640 - 320, Math.random()*360 - 180);
+    _gfx.text('some text', Math.random() * 640 - 320, Math.random()*360 - 180);
   }
 
-  layer1.draw();
-  setTimeout(stressLoop,300);
+  _gfx.draw();
+  setTimeout(stressLoop);
 };
 
-
+let d = 0;
+_gfx.color(Math.random()*256,Math.random()*256,Math.random()*256,255);
 const testLoop = ()=>{
-  layer1.text('hello world', 0,0);
-  layer1.draw();
+  _gfx.color(255,255,0,255);
+  d = (d+1)%360;
+  _gfx.rect(0,0, 100,100, d);
+  for(let i = 0; i<37; i ++){
+    _gfx.rect(16 * i - 302,1, 15, 15);
+  }
+  _gfx.lines(-136, 132, -136, 164, 142, 164, 142, 132, -136, 132);
+  _gfx.font(0);
+  _gfx.text('a  b  c  d  e  f  g  h  i  j  k  l  m', -300,150);
+  _gfx.font(1);
+  _gfx.text('a  b  c  d  e  f  g  h  i  j  k  l  m', -300,100);
+  
+  //layer1.text('n  o  p  q  r  s  t  u  v  w  x  y  z', -300,100);
+  _gfx.color(0,255,0,200);
+  _gfx.text('A  B  C  D  E  F  G  H  I  J  K  L  M', -300,50);
+  _gfx.text('N  O  P  Q  R  S  T  U  V  W  X  Y  Z', -300,0);
+  _gfx.text('Hola Mundo!', 100,-50);
+  
+  _gfx.spr(0, 0, -100, -100);
+  
+  
+  _gfx.spr(0, 1, -64, -68);
+  _gfx.spr(0, 2, -32, -68);
+  _gfx.spr(0, 3, 0, -68);
+  _gfx.spr(0, 4, 32, -68);
+
+  _gfx.spr(0, 5, -64, -100);
+  _gfx.spr(0, 6, -32, -100);
+  _gfx.spr(0, 7, 0, -100);
+  _gfx.spr(0, 8, 32, -100);
+
+  _gfx.spr(0, 9, -64, -132);
+  _gfx.spr(0, 10, -32, -132);
+  _gfx.spr(0, 11, 0, -132);
+  _gfx.spr(0, 12, 32, -132);
+
+  _gfx.lines(-100,-100,100,100)
+  _gfx.lines(200,100,100,120)
+
+
+
+  _gfx.draw();
+  fps++;
   setTimeout(testLoop);
 }
 
 
-stressLoop();
-//testLoop();
+//stressLoop();
+testLoop();
 
 
 

@@ -1,72 +1,73 @@
-/////////////////////
-// Graphics Module //
-//     Basics      //
-/////////////////////
+'gfx.js'
 
-// The graphics module works with as many layers as you need:
-// canvas dimensions are 640x360
-
-const myLayer = _gfx.iBuffer();   // creates a new layer to work with
 /*
-  draw some stuff here:
+This module manages the game graphics.
+Base Canvas size is 640x360, but you can set a multiplier to make it 720p, 1080p and so on.
+This module renders sprites and fonts directly from the gpu for better performance
 */
-_gfx.clear()      // clears the main canvas
-myLayer.draw()    // draws this layer on the main canvas
 
-// if you have multiple layers,
-// the best option is to create a simple graphics pipeline:
+## Concept:
 
-const drawPipeline = ()=>{
-  _gfx.clear();
-  backgroundLayer.draw();
-  mainLayerA.draw();
-  mainLayerB.draw();
-  foregroundLayer.draw();
-  uiLayer.draw();
-}
-
-///////////////////
-// Layer Methods //
-///////////////////
-
-myLayer.clear()                           // clears the layer canvas
-
-myLayer.color('#f0f')                     // changes the fill color
-myLayer.lineColor('#f0f')                 // changes the line color
-
-myLayer.font('32px courier');             // chante text font
-myLayer.textAlign('left');                // text alignment, ('center' | 'left' | 'right')
-myLayer.text('this  some text', 320,32);  // filled text, ('text', x, y)
-myLayer.lineText('other text', 100, 10);  // text outline
-
-myLayer.arc(100, 100, 50, 0, 360)         // draws an arc, (x, y, width, startAngle, endAngle)
-myLayer.lineArc(100, 200, 80, 0, 90)      // draws a line arc
-
-myLayer.rect(10, 10, 40, 40)              // draws a rectangle, (x, y, width, height)
-myLayer.lineRect(10, 10, 40, 40)          // draws a line rectangle
-
-myLayer.figure(x1, y1, x2, y2...)         // draws a figure
-myLayer.lines(x1, y1, x2, y2...)          // draws a set of continuous lines
-
-////////////////////
-// Sprite Methods //
-////////////////////
+'The gfx module works mainly on webgl2, this means it needs a little more setup than a normal 2d canvas element, but it is much faster'
 
 
-'IMPORTANT'
-// Images are loaded asyncronously,
-// Use the flag 'gfxLoaded' To check if all resources are loaded.
+'Usage'
 
-if(gfxLoaded){
-  myLayer1.img(myAtlas[id], x, y);                // draws an image.
-  myLayer1.img2(myAtlas[id], x, y, w, h);         // draws an image with a specified width and height.
-  myLayer1.img3(myAtlas[id], angle, x, y, w, h);  // same as img2 but rotated.
-}
+// importing module:
+import _gfx from './gfx_min.js';
 
-////////////
-// Macros //
-////////////
+// setup:
+_gfx.res(2);        // res scale multiplayer, (640 * m) x (360 * m), up to m = 6 (3840x2160)
+_gfx.motionBlur(x); // sets the motion blur value from 1 to 0, where 1 is "no motion blur".
 
-const mapImg = _gfx.mapImg(arr, imgArr, w);     // generates and returns a map macro image
 
+// fonts:
+/*
+  _gfx comes with 3 preloaded fonts ("sans-serif" 0, "times-new-roman" 1, "couerier-new" 2)
+  if you want to use another font,
+  you need to load it on the html,
+  when it's loaded call the localFont function and select an id for your font.
+  you can have up to 4 fonts, from 0 to 3.
+*/
+_gfx.localFont(1, "myFont");
+
+
+// atlas:
+/*
+  similar to fonts, you can load texture atlases with the function loadAtlas,
+  loadAtlas accepts url, preferably datauri.
+  you can have up to 4 atlases, from 0 to 3.
+*/
+_gfx.loadAtlas(0, my_atlas_url, tile_size_in_px);
+
+
+// rendering
+/*
+  when drawing, you are actually building a list of textured polygons, 
+  and at the end of your draw loop you render them all at once with the draw() method.
+*/
+_gfx.color(r,g,b,a);    // sets colors, values from 0 to 255;
+_gfx.lineWidth(x);      // sets the line width;
+_gfx.font(id);          // sets the active font;
+
+
+// drawing functions:
+_gfx.lines(x1,y1, x2,y2, x3, y3....);   // lets you draw a line with as many points as you want
+_gfx.rect(
+  x, y, w, h,
+  sX, sY,         // optional, rotation angles
+  scaleX, scaleY  // optional, vertical and horizontal stretching
+);
+_gfx.text(
+  txt, x, y,
+  w, h, sX, sY, scaleX  // optional
+);
+_gfx.spr(
+  aId, iId,               // atlasId, spriteId
+  x, y,
+  w, h,                   // optional, default 32x
+  sX, sY, scaleX, scaleY  // optional
+);
+
+draw();                   // renders all sprites, try to call it once per frame.
 

@@ -1,131 +1,71 @@
-'notes and limitations:'
-// max texture size is 4096 x 4096
-// max attribs per vertex is 16
-// max uniforms is 256(vertex shader) and 224(fragment shader)
-// max 16 textures => up to 12 atlases and 4 fonts
-
-attribs buffer:
-  - pos vec2(x,y)
-  - size vec2(sizeX, sizeY)
-  - skew vec2(degX, degY)
-  - squish vec2(squishX, squishY)
-  - type float(0 primitive || 1 text || 2 texture)
-  - fragData vec4(colorR || textureX, colorG || textureY, colorB || textureIndex, colorA)
-
-
-actual gfx hard limitations:
-- max 10 texture atlases
-- max 6 fonts
-- *test image bleed on texture size 4096...*
-
-
 # gfx.js | gfx_min.js
 
 This module manages the game graphics.
 Base Canvas size is 640x360, but you can set a multiplier to make it 720p, 1080p and so on.
-
+This module renders sprites and fonts directly from the gpu for better performance
 
 ## Concept:
 
-// With this module you can manage multiple graphicw layers.
-// You can also apply shaders to individual layers, then make a pipeline to draw them all on the main canvas.
 'The gfx module works mainly on webgl2, this means it needs a little more setup than a normal 2d canvas element, but it is much faster'
-// Layer Types
-//  - 2d sprite layers will be labeled spriteBuffer(), spriteBuffers can draw sprites, tiles, text, lines and figures.
-//  - shaderBuffers() are for advanced users who want to mess arround with custom shaders, 3d rendering and extra effects.
 
 
 'Usage'
 
-// importing module
-import _gfx from './gfx_min.js';  
-_gfx.res(2);      // res scale multiplayer, (640 * m) x (360 * m), up to m = 6 (3840x2160)
+// importing module:
+import _gfx from './gfx_min.js';
 
-'The spriteBuffer:'
+// setup:
+_gfx.res(2);        // res scale multiplayer, (640 * m) x (360 * m), up to m = 6 (3840x2160)
+_gfx.motionBlur(x); // sets the motion blur value from 1 to 0, where 1 is "no motion blur".
+
+
+// fonts:
 /*
-  when drawing on a spritebuffer, you are actually building a list of textured polygons, 
-  and at the end of your draw loop you render them all at once with the draw() method.
-  This drawing method takes account for depth and transparency.
+  _gfx comes with 3 preloaded fonts ("sans-serif" 0, "times-new-roman" 1, "couerier-new" 2)
+  if you want to use another font,
+  you need to load it on the html,
+  when it's loaded call the localFont function and select an id for your font.
+  you can have up to 4 fonts, from 0 to 3.
 */
+_gfx.localFont(1, "myFont");
 
-'Setting up a spriteBuffer layer'
-const myLayer1 = _gfx.spriteBuffer(); // creates a spriteBuffer
 
-// fonts
-myLayer1.createFont(      // sets the default font to use when drawing text,
-  <index>,                // you can keep up to 6 diferent fonts at a time.
-  'verdana'               // it is recomended to load the fonts at initialization.
+// atlas:
+/*
+  similar to fonts, you can load texture atlases with the function loadAtlas,
+  loadAtlas accepts url, preferably datauri.
+  you can have up to 4 atlases, from 0 to 3.
+*/
+_gfx.loadAtlas(0, my_atlas_url, tile_size_in_px);
+
+
+// rendering
+/*
+  when drawing, you are actually building a list of textured polygons, 
+  and at the end of your draw loop you render them all at once with the draw() method.
+*/
+_gfx.color(r,g,b,a);    // sets colors, values from 0 to 255;
+_gfx.lineWidth(x);      // sets the line width;
+_gfx.font(id);          // sets the active font;
+
+
+// drawing functions:
+_gfx.lines(x1,y1, x2,y2, x3, y3....);   // lets you draw a line with as many points as you want
+_gfx.rect(
+  x, y, w, h,
+  sX, sY,         // optional, rotation angles
+  scaleX, scaleY  // optional, vertical and horizontal stretching
+);
+_gfx.text(
+  txt, x, y,
+  w, h, sX, sY, scaleX  // optional
+);
+_gfx.spr(
+  aId, iId,               // atlasId, spriteId
+  x, y,
+  w, h,                   // optional, default 32x
+  sX, sY, scaleX, scaleY  // optional
 );
 
-
-myLayer1.dropFonts();     // discards all loaded fonts.
-
-// img atlas
-myLayer1.createAtlas(     // syntax is similar to createFont
-  <index>,                // you can have up to 10 diferent atlases at the same time
-  <image-canvas-dataurl>,        
-  <tile-size>             // you need to specify the tile size of the image in px
-);
-
-//
-
-
-
-const myShader1 = gfx.sBuffer('./vertex_shader_code.txt', './fragment_shader_code.txt');
-
-/////////////////////////////////////////////////
-
-// here you draw some stuff on the layers
-
-
-/////////////////////////////////////////////////
-
-gfx.clear();
-myShader1.draw();
-myLayer1.draw();
-
-```
-
-
-## text and primitives:
-
-```
-myLayer1.color(x);
-myLayer1.lineColor(x);
-myLayer1.font("format size_in_px font_family");
-myLayer1.textAlign("center" || "left" || "right");
-myLayer1.text('some text', x, y);    // self explanatory.
-myLayer1.lineText('some text', x, y);    // self explanatory.
-
-myLayer1.rect(x,y,w,h);
-myLayer1.lineRect(x,y,w,h);
-myLayer1.arc(x,y,radius,start_angle,end_angle);
-myLayer1.lineArc(x,y,radius,start_angle,end_angle);
-myLayer1.figure(x0, y0, x1,y1, x2, y2...);    // makes a figure from diferent coordinates.
-myLayer1.lines(x0, y0, x1, y1);   make lines between diferent coordinates.
-
-```
-
-
-## sprites:
-
-```
-const mySprites = gfx.loadAtlas(
-  'sprites_file.png', tile_size_in_px, scale_factor,              // load all sprites from a png file and returns an image array.
-  offsetX, offsetY, horizontal_gap, vertical_gap                  // this is an async function!
-);
-
-myLayer1.img(mySprites[id], x, y);                // draws an image.
-myLayer1.img2(mySprites[id], x, y, w, h);         // draws an image with a specified width and height.
-myLayer1.img3(mySprites[id], angle, x, y, w, h);  // same as img2 but rotated.
-```
-
-
-## shader layers
-
-```
-
-
-
-```
+draw();                   // renders all sprites, try to call it once per frame.
 
