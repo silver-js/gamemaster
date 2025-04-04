@@ -1,4 +1,4 @@
-let editName = '';
+let activeAtlas;
 let tSize = 32;
 let xOffset = 0;
 let yOffset = 0;
@@ -145,29 +145,31 @@ domImg.onload = ()=>{
 
 const updateAtlas = ()=>{
   domList.innerHTML = '';
-  const i = 100;
-  for(let k in db.rom.atlas){
-    domList.innerHTML += `<li><img alt="${k}" src="${db.rom.atlas[k].src}"/>${k}</li>`
+  for(let i = 0; i < 4; i ++){
+    if(db.rom.atlas[i]){
+      domList.innerHTML += `<li value=${i}><img alt=${i} src="${db.rom.atlas[i].data}"/>${i}</li>`;
+    }else{
+      domList.innerHTML += `<li value=${i} class="empty">${i}</li>`;
+    }
   }
-  domList.innerHTML += `<li value=-1> + </li>`
 }
 
 domList.addEventListener('click', e=>{
-  if(e.target.value == -1){
+  if(e.target.classList.contains("empty")){
     confTitle.innerText = 'Creating new tileset:';
     saveBtn.innerText = 'Save';
     confWrapper.classList.remove('hidden');
     controlsVisible(true);
-    editName = '';
+    activeAtlas = e.target.value;
     domImg.src = "//:0";
     drawOnCanvas();
     return;
   }
   if(e.target.alt != undefined){
-    confTitle.innerText = `Viewing '${e.target.alt}' atlas`;
+    confTitle.innerText = `Viewing atlas '${e.target.alt}'`;
     confWrapper.classList.remove('hidden');
     saveBtn.innerText = 'Rename'
-    editName = e.target.alt;
+    activeAtlas = e.target.value;
     domImg.src = e.target.src;
     confAll[0].value = db.rom.atlas[e.target.alt].tileSize;
     for(let i = 1; i < 7; i++){
@@ -180,9 +182,9 @@ domList.addEventListener('click', e=>{
 domList.addEventListener('contextmenu', e=>{
   e.preventDefault()
   if(e.target.alt != undefined){
-    const ok = confirm(`Delete "${e.target.alt}"?`);
+    const ok = confirm(`Delete atlas "${e.target.alt}"?`);
     if(ok){ 
-      db.deleteEntry('atlas', e.target.alt);
+      db.deleteEntry('atlas', parseInt(e.target.alt));
       location.reload();
     }
   }
@@ -221,34 +223,16 @@ const generateAtlas = ()=>{
 }
 saveBtn.addEventListener('click', ()=>{
   if(domImg.src){
-    const atlasName = prompt('Atlas name:', editName);
-    const regEx = /^\d|[\s\.\-\(\)\[\]\{\},$!]/g
-    if(!atlasName.length || atlasName.match(regEx)){
-      alert(`Invalid Name:\n It can only contain numbers, characters and "_" and can't start with a number`);
-      return;
-    }
-    if(db.rom.fonts[atlasName]){
-      alert(`"${atlasName}" already exists as a font variable!`);
-      return;
-    }
-    if(db.rom.atlas[atlasName] && atlasName !== editName){
-      alert(`"${atlasName}" already exists!`);
-      return;
-    }
-    if(editName !== ''){
-      delete db.rom.atlas[editName];
-      db.deleteEntry('atlas', editName);
-    }
     const dataUri = generateAtlas()
-    db.rom.atlas[atlasName] = {
-      src: dataUri,
+    db.rom.atlas[activeAtlas] = {
+      data: dataUri,
       tileSize: tSize,
     }
     updateAtlas()
-    db.updateRom('atlas', atlasName);
+    db.updateRom('atlas', activeAtlas);
     confWrapper.classList.add('hidden');
     confTitle.innerText = 'Nothing Selected';
-    editName = '';
+    activeAtlas = null;
     domImg.src = "//:0";
     drawOnCanvas();
   }

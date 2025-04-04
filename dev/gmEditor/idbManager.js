@@ -6,8 +6,8 @@ window.db  = {
     version: 'x.x',
     code: [''],
     maps: [],
-    atlas: {},
-    fonts: {},
+    atlas: [null, null, null, null],
+    fonts: [null, null, null, null],
     sfx: [],
   },
   loaderFunctions: [],
@@ -100,8 +100,11 @@ const startDb = new Promise(res=>{
     codeStore.put({id: 0, value: ''});
 
     res.createObjectStore("maps", {keyPath: 'id'});
-    res.createObjectStore("atlas", {keyPath: 'id'});
-    res.createObjectStore("fonts", {keyPath: 'id'});
+    const atlasStore = res.createObjectStore("atlas", {keyPath: 'id'});
+    atlasStore.put({id: 0, value: null})
+
+    const fontStore = res.createObjectStore("fonts", {keyPath: 'id'});
+  
     res.createObjectStore("sfx", {keyPath: 'id'});
     console.log('database created...');
   }
@@ -140,8 +143,8 @@ db.loadRom = async(r)=>{
     db.updateRom('code', i);
   }
   await clearStore('atlas');
-  for(let key in db.rom.atlas){
-    db.updateRom('atlas', key);
+  for(let i = 0; i < db.rom.atlas.length; i++){
+    db.updateRom('atlas', i);
   }
   location.reload();
 }

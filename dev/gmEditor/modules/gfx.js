@@ -1,6 +1,8 @@
 // DOM setup
 let res = 1;
-const canv = document.getElementById('gm-main');
+const gameWrapper = document.getElementById("game-wrapper")
+const canv = document.createElement('canvas');
+gameWrapper.appendChild(canv);
 const checkFlip = ()=>{
   const r = window.innerWidth / window.innerHeight;
   canv.style = `
@@ -307,6 +309,7 @@ let clr = [1,1,1,1];
 let lineWidth = 2;
 let activeFont = 0;
 export default {
+  canv,
   res: (x)=>{
     res = x;
     reRes();
