@@ -365,7 +365,7 @@ export default {
     loaderCtx.fillStyle = "#fff";
     for(let i = 0; i < tW; i++){
       for(let j = 0; j < tH; j++){
-        loaderCtx.drawImage(aImg, i * 32, j * 32, 32, 32, 0, loaderCanvas.height - 32 * (2 + i + (j * tW)) , 32, 32);
+        loaderCtx.drawImage(aImg, i * tileSize, j * tileSize, tileSize, tileSize, 0, loaderCanvas.height - tileSize * (2 + i + (j * tW)) , tileSize, tileSize);
       }
     };
     loadTexture(loaderCanvas, id + 4);
