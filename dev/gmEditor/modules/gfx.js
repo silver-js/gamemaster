@@ -53,6 +53,7 @@ const vertexTxt = `#version 300 es
   layout(location = 6) in vec4 data;
   
   const float rad = 0.01745329;
+  vec2 margin;
 
   uniform vec2 pxScale;
   
@@ -62,12 +63,16 @@ const vertexTxt = `#version 300 es
   out vec3 finalCoord;
 
   void main(){
+    margin = vec2(1.0,1.0);
+    if(type != 0.0){
+      margin = vec2(1.25,1.25);
+    }
     gl_Position = vec4(vec2(
-      vertPos * sprSize * vec2(cos(spin.x * rad), cos(spin.y * rad)) + vec2(-vertPos.y * sprSize.y * sin(spin.y * rad), vertPos.x * sprSize.x * sin(spin.x * rad)) + spritePos / scale
+      vertPos * sprSize * margin * vec2(cos(spin.x * rad), cos(spin.y * rad)) + vec2(-vertPos.y * sprSize.y * sin(spin.y * rad), vertPos.x * sprSize.x * sin(spin.x * rad)) + spritePos / scale
     ) * pxScale * scale, 0.0, 1.0);
     fType = type;
     samplerPick = floor(data.x / 2.0);
-    finalCoord = vec3((vertPos.x + .5) * .98, (vertPos.y + .5) * .98, floor(data.y / 2.0));
+    finalCoord = vec3((vertPos.x + .5), (vertPos.y + .5), floor(data.y / 2.0));
     finalColor = vec4(data.x - samplerPick * 2.0, data.y - floor(data.y / 2.0) * 2.0, data.z, data.a);
   }
 `;
@@ -264,9 +269,9 @@ const loadTexture = (img, tu) =>{
   gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
   gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, loaderCanvas.width, loaderCanvas.width, loaderCanvas.height / loaderCanvas.width , 0, gl.RGBA, gl.UNSIGNED_BYTE, img);
 
-  gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
-  //gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_NEAREST);
-  //gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST_MIPMAP_NEAREST);
+  //gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }
 
 loadTexture(loaderCanvas, 4);
@@ -352,20 +357,21 @@ export default {
     spriteArr = [];
   },
   loadAtlas: async (id, url, tileSize)=>{
+    const tileMargin = Math.floor(tileSize / 8)
     const aImg = new Image();
     aImg.src = url;
     await aImg.decode();
     let tW = Math.floor(aImg.width / tileSize);
     let tH = Math.floor(aImg.height / tileSize);
-    loaderCanvas.width = tileSize;
-    loaderCanvas.height = tileSize * tW * tH;
+    loaderCanvas.width = tileSize + tileMargin * 2;
+    loaderCanvas.height = (tileSize + tileMargin * 2) * tW * tH;
     loaderCtx.imageSmoothingEnabled = false;
     loaderCtx.webkitImageSmoothingEnabled = false;
     loaderCtx.mozImageSmoothingEnabled = false;
     loaderCtx.fillStyle = "#fff";
     for(let i = 0; i < tW; i++){
       for(let j = 0; j < tH; j++){
-        loaderCtx.drawImage(aImg, i * tileSize, j * tileSize, tileSize, tileSize, 0, loaderCanvas.height - tileSize * (2 + i + (j * tW)) , tileSize, tileSize);
+        loaderCtx.drawImage(aImg, i * tileSize, j * tileSize, tileSize, tileSize, tileMargin, loaderCanvas.height - (tileSize + tileMargin * 2) * (2 + i + (j * tW)) + tileMargin, tileSize, tileSize);
       }
     };
     loadTexture(loaderCanvas, id + 4);
