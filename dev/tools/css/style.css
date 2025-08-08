@@ -1,0 +1,14 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+body{
+  
+}
+#game-wrapper{
+  box-shadow: 0 0 2px 2px grey;
+  margin: 0 auto;
+  width: 50%;
+  height: 50vh;
+}
