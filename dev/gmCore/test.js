@@ -1,4 +1,4 @@
-import {_loop, _pad, _cfg} from './gmCore_min.js';
+import {_loop, _pad, _cfg} from './gmCore.js';
 // setup
 const canv = document.getElementById('game');
 const ctx = canv.getContext('2d');

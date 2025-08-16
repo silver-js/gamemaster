@@ -65,6 +65,10 @@ const mouseLockEvt = ()=>{
 }
 
 // touch controls ///////////////////////////////////////////////////
+
+// visualization
+
+
 const tLockArr = new Float32Array(4);
 const tX = (e)=> (e.changedTouches[0].pageX - pTarget.offsetLeft) / pTarget.offsetWidth * 2 - 1;
 const tY = (e)=> (e.changedTouches[0].pageY - pTarget.offsetTop) / pTarget.offsetHeight * 2 - 1;
@@ -90,11 +94,20 @@ const tpStartEvt = (e)=>{
   areaCheck(x, y, e.changedTouches[0].identifier);
   const a = activeArea[e.changedTouches[0].identifier];
   if(a){
+    a.dX = e.changedTouches[0].pageX;
+    a.dY = e.changedTouches[0].pageY;
+    document.body.appendChild(a.dom[1]);
+    a.dom[1].style.top = a.dY + 'px';
+    a.dom[1].style.left = a.dX + 'px';
+    
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 255;
         break;
       case 'stick':
+        document.body.appendChild(a.dom[0]);
+        a.dom[0].style.top = a.dY + 'px';
+        a.dom[0].style.left = a.dX + 'px';
         a.oX = x;
         a.oY = y;
         _pad[0].axis[a.m[0]] = 0;
@@ -124,6 +137,8 @@ const tpMoveEvt = (e)=>{
       case 'stick':
         _pad[0].axis[a.m[0]] = Math.max(-.2,Math.min(tX(e)-a.oX,.2))*5;
         _pad[0].axis[a.m[1]] = Math.max(-.2,Math.min((tY(e)-a.oY)*tpRatio,.2))*5;
+        a.dom[1].style.left = (a.dX + _pad[0].axis[a.m[0]]*16) + 'px';
+        a.dom[1].style.top = (a.dY + _pad[0].axis[a.m[1]]*16) + 'px';
         break;
       case 'swipe':
         _pad[0].btn[a.m[0]] = (tY(e) - a.oY)*tpRatio > .1 ? 255 : 0;
@@ -148,11 +163,13 @@ const tpEndEvt = (e)=>{
   tLockArr.set([0,0]);
   const a = activeArea[e.changedTouches[0].identifier];
   if(a){
+    document.body.removeChild(a.dom[1]);
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 0;
         break;
       case 'stick':
+        document.body.removeChild(a.dom[0]);
         _pad[0].axis[a.m[0]] = 0;
         _pad[0].axis[a.m[1]] = 0;
         break;
@@ -375,6 +392,16 @@ flow();
 // Config Methods //
 ////////////////////
 
+const areaDom = ()=>{
+  const res = [
+    document.createElement('div'),
+    document.createElement('div')
+  ];
+  res[0].style = 'transform:translate(-10vmin,-10vmin);z-index:99;user-select:none;position:fixed;width:20vmin;height:20vmin;border-radius:50%;background:#5552;';
+  res[1].style = 'transform:translate(-5vmin,-5vmin);z-index:100;user-select:none;position:fixed;width:10vmin;height:10vmin;border-radius:50%;background:#5552;';
+  return res;
+} 
+
 export const _cfg = {
   setClock: (x)=>{
     delay[0] = 1000 / x;
@@ -393,17 +420,21 @@ export const _cfg = {
       }
       mLockTarget = pTarget;
       pTarget.addEventListener('click', mouseLockEvt);
-      console.log('pointerLock on');
     }else{
       if(mLockTarget){
         mLockTarget.removeEventListener('click', mouseLockEvt);
       }
       document.exitPointerLock();
-      console.log('pointerLock off');
     }
   },
   tpAdd: (x, y, w, h, t, m, c)=>{
-    tpArea.push({x, y, w, h, t, m, c, oX:0, oY:0});
+    tpArea.push({
+      x, y, w, h,
+      t, m, c,
+      dom: areaDom(),
+      dX: 0, dY: 0,
+      oX:0, oY:0
+    });
   },
   tpRemove: (x, y)=>{
     const i = tpArea.findIndex(n=>{

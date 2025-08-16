@@ -80,3 +80,6 @@ _cfg.kbAdd({key: 'KeyY', map: [2, 'btn', 3]});
 _cfg.kbRemove('KeyW','KeyJ');
 console.log(_cfg.getKbMap());
 ```
+
+
+toDo : visualization of touches
