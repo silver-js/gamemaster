@@ -1,83 +1,71 @@
-# Module still in development / design, not yet usable.
-
-
-
-
-
 # gfx.js | gfx_min.js
 
 This module manages the game graphics.
 Base Canvas size is 640x360, but you can set a multiplier to make it 720p, 1080p and so on.
-
+This module renders sprites and fonts directly from the gpu for better performance
 
 ## Concept:
 
-With this module you can manage multiple image layers, you can also apply shaders to individual layers, then make a pipeline to draw them all on the main canvas.
-2d image layers will be labeled iBuffer, and shaders will be labeled as sBuffer.
+'The gfx module works mainly on webgl2, this means it needs a little more setup than a normal 2d canvas element, but it is much faster'
 
 
+'Usage'
 
-## Usage:
+// importing module:
+import _gfx from './gfx_min.js';
 
-```
-import gfx from './gfx_min.js';  
-
-const myLayer1 = gfx.iBuffer();
-const myShader1 = gfx.sBuffer('./vertex_shader_code.txt', './fragment_shader_code.txt');
-
-/////////////////////////////////////////////////
-
-// here you draw some stuff on the layers
+// setup:
+_gfx.res(2);        // res scale multiplayer, (640 * m) x (360 * m), up to m = 6 (3840x2160)
+_gfx.motionBlur(x); // sets the motion blur value from 1 to 0, where 1 is "no motion blur".
 
 
-/////////////////////////////////////////////////
-
-gfx.clear();
-myShader1.draw();
-myLayer1.draw();
-
-```
-
-
-## text and primitives:
-
-```
-myLayer1.color(x);
-myLayer1.lineColor(x);
-myLayer1.font("format size_in_px font_family");
-myLayer1.textAlign("center" || "left" || "right");
-myLayer1.text('some text', x, y);    // self explanatory.
-myLayer1.lineText('some text', x, y);    // self explanatory.
-
-myLayer1.rect(x,y,w,h);
-myLayer1.lineRect(x,y,w,h);
-myLayer1.arc(x,y,radius,start_angle,end_angle);
-myLayer1.lineArc(x,y,radius,start_angle,end_angle);
-myLayer1.figure(x0, y0, x1,y1, x2, y2...);    // makes a figure from diferent coordinates.
-myLayer1.lines(x0, y0, x1, y1);   make lines between diferent coordinates.
-
-```
+// fonts:
+/*
+  _gfx comes with 3 preloaded fonts ("sans-serif" 0, "times-new-roman" 1, "couerier-new" 2)
+  if you want to use another font,
+  you need to load it on the html,
+  when it's loaded call the localFont function and select an id for your font.
+  you can have up to 4 fonts, from 0 to 3.
+*/
+_gfx.localFont(1, "myFont");
 
 
-## sprites:
+// atlas:
+/*
+  similar to fonts, you can load texture atlases with the function loadAtlas,
+  loadAtlas accepts url, preferably datauri.
+  you can have up to 4 atlases, from 0 to 3.
+*/
+_gfx.loadAtlas(0, my_atlas_url, tile_size_in_px);
 
-```
-const mySprites = gfx.loadAtlas(
-  'sprites_file.png', tile_size_in_px, scale_factor,              // load all sprites from a png file and returns an image array.
-  offsetX, offsetY, horizontal_gap, vertical_gap                  // this is an async function!
+
+// rendering
+/*
+  when drawing, you are actually building a list of textured polygons, 
+  and at the end of your draw loop you render them all at once with the draw() method.
+*/
+_gfx.color(r,g,b,a);    // sets colors, values from 0 to 255;
+_gfx.lineWidth(x);      // sets the line width;
+_gfx.font(id);          // sets the active font;
+
+
+// drawing functions:
+_gfx.lines(x1,y1, x2,y2, x3, y3....);   // lets you draw a line with as many points as you want
+_gfx.rect(
+  x, y, w, h,
+  sX, sY,         // optional, rotation angles
+  scaleX, scaleY  // optional, vertical and horizontal stretching
+);
+_gfx.text(
+  txt, x, y,
+  w, h, sX, sY, scaleX  // optional
+);
+_gfx.spr(
+  aId, iId,               // atlasId, spriteId
+  x, y,
+  w, h,                   // optional, default 32x
+  sX, sY, scaleX, scaleY  // optional
 );
 
-myLayer1.img(mySprites[id], x, y);                // draws an image.
-myLayer1.img2(mySprites[id], x, y, w, h);         // draws an image with a specified width and height.
-myLayer1.img3(mySprites[id], angle, x, y, w, h);  // same as img2 but rotated.
-```
-
-
-## shader layers
-
-```
-
-
-
-```
+draw();                   // renders all sprites, try to call it once per frame.
 
