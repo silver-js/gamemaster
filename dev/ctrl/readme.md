@@ -33,7 +33,7 @@ usage:
 
   * shared methods:
     ```
-      _padCfg.pointerTarget(canv);    // set the element that recieves pointer interactions.
+      _padCfg.pointerTarget(canv);    // set the DOM element that recieves pointer interactions.
 
       _padCfg.pointerLock(true);      // enables/disables pointerLock.
       
