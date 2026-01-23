@@ -22,5 +22,11 @@ This project consists on a simple and modular javascript library, aimed to ease 
 
 - [gfx](https://github.com/silver-js/gamemaster/tree/main/dev/gfx) is a graphics library, focused on sprites, uses webgl2 to draw sprites, way way faster than 2d canvas.  
 
-- Broken/Unusable modules:
-  + pixics(gpu physics, on planning stage)
+
+- [gmEditor](https://github.com/silver-js/gamemaster/tree/main/dev/gmEditor) is just a protoype of what a proper game engine using this library could look like, needs a TON of work(not recomended and buggy, work in progress).  
+
+
+- Broken/Unusable modules:  
+  + pixics(gpu physics, on planning stage)  
+  + sfx(placeholder for the sound library, empty script)  
+  + network(placeholder for a websocket service for multiplayer, work in progress, comming soon)  
