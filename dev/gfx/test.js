@@ -1,4 +1,4 @@
-import _gfx from './gfx.js';
+import {_gfx} from './gfx_min.js';
 let fps = 0;
 let playState = true;
 setInterval(()=>{
@@ -155,9 +155,11 @@ const testLoop = ()=>{
   	return arr;
   }
   _gfx.color(0,255,255,200);
-	_gfx.lines(...circlePoints(-200, -100, 100, 32))
+	_gfx.lines(...circlePoints(-200, -100, 100, 16))
+	_gfx.lines(...circlePoints(-200, -100, 100, 3))
   _gfx.color(255,255,0,200);
-	_gfx.lines(...circlePoints(-200, -100, 140, 8))
+	_gfx.lines(...circlePoints(-200, -100, 100, 8))
+	_gfx.lines(...circlePoints(-200, -100, 100, 4))
   _gfx.color(255,0,255,200);
   _gfx.rect(
   	-200,-100,

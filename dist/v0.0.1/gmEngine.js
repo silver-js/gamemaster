@@ -3,7 +3,12 @@
 /////////
 
 const timer = new Float64Array(3);                // cpu, gpu, now
-const delay = new Float32Array(2).fill(100 / 3);  // cpu, gpu
+const delay = new Float32Array(3).fill(100 / 3);  // cpu, gpu
+const calcTimeout = ()=>{
+  delay[2] = Math.min(delay[0], delay[1])/4;
+}
+calcTimeout();
+
 export const _loop = {
   update: ()=>{}, draw: ()=>{},
 }
@@ -99,7 +104,7 @@ const tpStartEvt = (e)=>{
     document.body.appendChild(a.dom[1]);
     a.dom[1].style.top = a.dY + 'px';
     a.dom[1].style.left = a.dX + 'px';
-    
+
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 255;
@@ -383,7 +388,7 @@ const flow = ()=>{
       timer[1] += delay[1];
     }
   }
-  setTimeout(flow);
+  setTimeout(flow, delay[2]);
 }
 flow();
 
@@ -400,14 +405,16 @@ const areaDom = ()=>{
   res[0].style = 'transform:translate(-10vmin,-10vmin);z-index:99;user-select:none;position:fixed;width:20vmin;height:20vmin;border-radius:50%;background:#5552;';
   res[1].style = 'transform:translate(-5vmin,-5vmin);z-index:100;user-select:none;position:fixed;width:10vmin;height:10vmin;border-radius:50%;background:#5552;';
   return res;
-} 
+}
 
 export const _cfg = {
   setClock: (x)=>{
     delay[0] = 1000 / x;
+    calcTimeout();
   },
   setFps: (x)=>{
     delay[1] = 1000 / x;
+    calcTimeout();
   },
   pointerTarget: (a)=>{
     newPTarget(a);
@@ -432,8 +439,8 @@ export const _cfg = {
       x, y, w, h,
       t, m, c,
       dom: areaDom(),
-      dX: 0, dY: 0,
-      oX:0, oY:0
+                dX: 0, dY: 0,
+                oX:0, oY:0
     });
   },
   tpRemove: (x, y)=>{
@@ -465,16 +472,15 @@ export const _cfg = {
 // DOM setup
 let res = 1;
 const canv = document.getElementById('gm-main');
-if(!canv) console.error('Main canvas not found!, make sure you have a canvas element with the id "gm-main"');
 const checkFlip = ()=>{
   const r = window.innerWidth / window.innerHeight;
   canv.style = `
-    box-shadow: 0 0 1px 1px grey;
-    width: ${r < 1.79 ? '99%' : 'auto'};
-    height: ${r < 1.79 ? 'auto' : window.innerHeight * .99 + 'px'};
-    display: block;
-    margin: 0 auto;
-    image-rendering: pixelated;
+  box-shadow: 0 0 1px 1px grey;
+  width: ${r < 1.79 ? '99%' : 'auto'};
+  height: ${r < 1.79 ? 'auto' : window.innerHeight * .99 + 'px'};
+  display: block;
+  margin: 0 auto;
+  image-rendering: pixelated;
   `;
 }
 checkFlip();
@@ -504,83 +510,83 @@ const spriteBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, spriteBuffer);
 
 const vertexTxt = `#version 300 es
-  precision mediump float;
-  
-  layout(location = 0) in vec2 vertPos;
+precision mediump float;
 
-  layout(location = 1) in vec2 spritePos;
-  layout(location = 2) in vec2 sprSize;
-  layout(location = 3) in vec2 spin;
-  layout(location = 4) in vec2 scale;
-  layout(location = 5) in float type;
-  layout(location = 6) in vec4 data;
-  
-  const float rad = 0.01745329;
+layout(location = 0) in vec2 vertPos;
 
-  uniform vec2 pxScale;
-  
-  out float fType;
-  out float samplerPick;
-  out vec4 finalColor;
-  out vec3 finalCoord;
+layout(location = 1) in vec2 spritePos;
+layout(location = 2) in vec2 sprSize;
+layout(location = 3) in vec2 spin;
+layout(location = 4) in vec2 scale;
+layout(location = 5) in float type;
+layout(location = 6) in vec4 data;
 
-  void main(){
-    gl_Position = vec4(vec2(
-      vertPos * sprSize * vec2(cos(spin.x * rad), cos(spin.y * rad)) + vec2(-vertPos.y * sprSize.y * sin(spin.y * rad), vertPos.x * sprSize.x * sin(spin.x * rad)) + spritePos / scale
-    ) * pxScale * scale, 0.0, 1.0);
-    fType = type;
-    samplerPick = floor(data.x / 2.0);
-    finalCoord = vec3((vertPos.x + .5) * .98, (vertPos.y + .5) * .98, floor(data.y / 2.0));
-    finalColor = vec4(data.x - samplerPick * 2.0, data.y - floor(data.y / 2.0) * 2.0, data.z, data.a);
-  }
+const float rad = 0.01745329;
+
+uniform vec2 pxScale;
+
+out float fType;
+out float samplerPick;
+out vec4 finalColor;
+out vec3 finalCoord;
+
+void main(){
+  gl_Position = vec4(vec2(
+    vertPos * sprSize * vec2(cos(spin.x * rad), cos(spin.y * rad)) + vec2(-vertPos.y * sprSize.y * sin(spin.y * rad), vertPos.x * sprSize.x * sin(spin.x * rad)) + spritePos / scale
+  ) * pxScale * scale, 0.0, 1.0);
+  fType = type;
+  samplerPick = floor(data.x / 2.0);
+  finalCoord = vec3((vertPos.x + .5) * .98, (vertPos.y + .5) * .98, floor(data.y / 2.0));
+  finalColor = vec4(data.x - samplerPick * 2.0, data.y - floor(data.y / 2.0) * 2.0, data.z, data.a);
+}
 `;
 const fragmentTxt = `#version 300 es
-  precision mediump float;
-  precision mediump sampler2DArray;
-  
-  in float samplerPick;
-  in vec3 finalCoord;
-  in float fType;
-  in vec4 finalColor;
+precision mediump float;
+precision mediump sampler2DArray;
 
-  uniform sampler2DArray uFontSamplerA;
-  uniform sampler2DArray uFontSamplerB;
-  uniform sampler2DArray uFontSamplerC;
-  uniform sampler2DArray uFontSamplerD;
-  uniform sampler2DArray uSpriteSamplerA;
-  uniform sampler2DArray uSpriteSamplerB;
-  uniform sampler2DArray uSpriteSamplerC;
-  uniform sampler2DArray uSpriteSamplerD;
-  
-  out vec4 outputColor;
-  
-  void main(){
-    if(fType == 0.0){
-      outputColor = finalColor;
-    }else if(fType == 1.0){
-      if(samplerPick == 0.0){
-        outputColor = texture(uFontSamplerA, finalCoord) + finalColor;
-      }else if(samplerPick == 1.0){
-        outputColor = texture(uFontSamplerB, finalCoord) + finalColor;
-      }else if(samplerPick == 2.0){
-        outputColor = texture(uFontSamplerC, finalCoord) + finalColor;
-      }else if(samplerPick == 3.0){
-        outputColor = texture(uFontSamplerD, finalCoord) + finalColor;
-      }
-    }else if(fType == 2.0){
-      if(samplerPick == 0.0){
-        outputColor = texture(uSpriteSamplerA, finalCoord);
-      }else if(samplerPick == 1.0){
-        outputColor = texture(uSpriteSamplerB, finalCoord);
-      }else if(samplerPick == 2.0){
-        outputColor = texture(uSpriteSamplerC, finalCoord);
-      }else if(samplerPick == 3.0){
-        outputColor = texture(uSpriteSamplerD, finalCoord);
-      }
-    }else{
-      outputColor = vec4(1.0, 1.0, 1.0, 1.0);
+in float samplerPick;
+in vec3 finalCoord;
+in float fType;
+in vec4 finalColor;
+
+uniform sampler2DArray uFontSamplerA;
+uniform sampler2DArray uFontSamplerB;
+uniform sampler2DArray uFontSamplerC;
+uniform sampler2DArray uFontSamplerD;
+uniform sampler2DArray uSpriteSamplerA;
+uniform sampler2DArray uSpriteSamplerB;
+uniform sampler2DArray uSpriteSamplerC;
+uniform sampler2DArray uSpriteSamplerD;
+
+out vec4 outputColor;
+
+void main(){
+  if(fType == 0.0){
+    outputColor = finalColor;
+  }else if(fType == 1.0){
+    if(samplerPick == 0.0){
+      outputColor = texture(uFontSamplerA, finalCoord) + finalColor;
+    }else if(samplerPick == 1.0){
+      outputColor = texture(uFontSamplerB, finalCoord) + finalColor;
+    }else if(samplerPick == 2.0){
+      outputColor = texture(uFontSamplerC, finalCoord) + finalColor;
+    }else if(samplerPick == 3.0){
+      outputColor = texture(uFontSamplerD, finalCoord) + finalColor;
     }
+  }else if(fType == 2.0){
+    if(samplerPick == 0.0){
+      outputColor = texture(uSpriteSamplerA, finalCoord);
+    }else if(samplerPick == 1.0){
+      outputColor = texture(uSpriteSamplerB, finalCoord);
+    }else if(samplerPick == 2.0){
+      outputColor = texture(uSpriteSamplerC, finalCoord);
+    }else if(samplerPick == 3.0){
+      outputColor = texture(uSpriteSamplerD, finalCoord);
+    }
+  }else{
+    outputColor = vec4(1.0, 1.0, 1.0, 1.0);
   }
+}
 `;
 
 const vShader = gl.createShader(gl.VERTEX_SHADER);
@@ -771,7 +777,6 @@ reRes();
 let clr = [1,1,1,1];
 let lineWidth = 2;
 let activeFont = 0;
-
 export const _gfx = {
   res: (x)=>{
     res = x;
@@ -789,12 +794,12 @@ export const _gfx = {
   },
   font: (id)=>activeFont = id,
   lines: (...args)=>{
-    for(let i = 0; i < args.length - 2; i+=2){
-      let a = args[i+2] - args[i];
-      let o = args[i+3] - args[i+1];
-      let h = Math.sqrt(a**2 + o**2);
-      let spin = (o < 0 ? 1 : -1 ) * Math.acos(o/h) / deg;
-      spriteArr.push(args[i] + a / 2, args[i + 1] + o / 2 , lineWidth, h , spin, spin, 1, 1, 0, ...clr);
+    for(let i = 2; i < args.length; i+=2){
+      let a = args[i] - args[i - 2];
+      let o = args[i + 1] - args[i - 1];
+      let h = Math.sqrt(a ** 2 + o ** 2);
+      let spin = Math.atan(-a/o) / deg;
+      spriteArr.push(args[i] - a / 2, args[i + 1] - o / 2 , lineWidth, h , spin, spin, 1, 1, 0, ...clr);
     }
   },
   rect: (x, y, w, h, sX = 0, sY, scaleX = 1, scaleY = 1)=>{

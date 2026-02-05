@@ -306,7 +306,7 @@ reRes();
 let clr = [1,1,1,1];
 let lineWidth = 2;
 let activeFont = 0;
-export default {
+export const _gfx = {
   res: (x)=>{
     res = x;
     reRes();

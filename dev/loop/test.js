@@ -1,9 +1,9 @@
-import cpu from './cpu_min_test.js';
+import {_loop} from './loop_min.js';
 let timer = performance.now() + 1000;
 let ups = 0;
 let fps = 0;
-cpu.setClock(120);
-cpu.setFps(120);
+_loop.setClock(60);
+_loop.setFps(60);
 
 
 // init
@@ -13,13 +13,13 @@ const point = {
   x:Math.floor(Math.random() * 320),
   y:Math.floor(Math.random() * 320),
   w: 16,
-  sx:Math.floor(Math.random() * 2 + 1),
-  sy:Math.floor(Math.random() * 2 + 1),
+  sx:Math.floor(Math.random() * 8 + 4),
+  sy:Math.floor(Math.random() * 8 + 4),
 };
 let cpuData = '';
 
 // loops
-cpu.draw = ()=>{
+_loop.draw = ()=>{
   fps++;
   ctx.clearRect(0, 0, 320, 320);
   ctx.fillText(cpuData, 10, 10);
@@ -31,20 +31,20 @@ cpu.draw = ()=>{
     fps = 0;
   }
 };
-cpu.update = ()=>{
+_loop.update = ()=>{
   ups++;
   point.x += point.sx;
   point.y += point.sy;
   if(point.x > 320){
-    point.sx = - Math.floor(Math.random() * 3 + 1);
+    point.sx = - Math.floor(Math.random() * 8 + 4);
   }
   if(point.y > 320){
-    point.sy = - Math.floor(Math.random() * 3 + 1);
+    point.sy = - Math.floor(Math.random() * 8 + 4);
   }
   if(point.x < 0){
-    point.sx = Math.floor(Math.random() * 3 + 1);
+    point.sx = Math.floor(Math.random() * 8 + 4);
   }
   if(point.y < 0){
-    point.sy = Math.floor(Math.random() * 3 + 1);
+    point.sy = Math.floor(Math.random() * 8 + 4);
   }
 };

@@ -1,1 +1,0 @@
-const e=new Float64Array(3),r=new Float32Array(2).fill(100/3),t={update:()=>{},draw:()=>{},setClock:e=>{r[0]=1e3/e},setFps:e=>{r[1]=1e3/e}},a=()=>{for(e[2]=performance.now();e[0]<e[2];)t.update(),e[0]+=r[0];if(e[1]<e[2])for(t.draw();e[1]<e[2];)e[1]+=r[1];setTimeout(a)};a();export default t;

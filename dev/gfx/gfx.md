@@ -12,7 +12,7 @@ This module renders sprites and fonts directly from the gpu for better performan
 'Usage'
 
 // importing module:
-import _gfx from './gfx_min.js';
+import {_gfx} from './gfx_min.js';
 
 // setup:
 _gfx.res(2);        // res scale multiplayer, (640 * m) x (360 * m), up to m = 6 (3840x2160)
@@ -50,7 +50,7 @@ _gfx.font(id);          // sets the active font;
 
 
 // drawing functions:
-_gfx.lines(x1,y1, x2,y2, x3, y3....);   // lets you draw a line with as many points as you want
+_gfx.lines(x1,y1, x2,y2, x3, y3....);   // lets you draw a line strip with as many points as you want
 _gfx.rect(
   x, y, w, h,
   sX, sY,         // optional, rotation angles

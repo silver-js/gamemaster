@@ -3,7 +3,12 @@
 /////////
 
 const timer = new Float64Array(3);                // cpu, gpu, now
-const delay = new Float32Array(2).fill(100 / 3);  // cpu, gpu
+const delay = new Float32Array(3).fill(100 / 3);  // cpu, gpu
+const calcTimeout = ()=>{
+    delay[2] = Math.min(delay[0], delay[1])/4;
+}
+calcTimeout();
+
 export const _loop = {
   update: ()=>{}, draw: ()=>{},
 }
@@ -383,7 +388,7 @@ const flow = ()=>{
       timer[1] += delay[1];
     }
   }
-  setTimeout(flow);
+  setTimeout(flow, delay[2]);
 }
 flow();
 
@@ -405,9 +410,11 @@ const areaDom = ()=>{
 export const _cfg = {
   setClock: (x)=>{
     delay[0] = 1000 / x;
+    calcTimeout();
   },
   setFps: (x)=>{
     delay[1] = 1000 / x;
+    calcTimeout();
   },
   pointerTarget: (a)=>{
     newPTarget(a);
