@@ -323,12 +323,12 @@ export default {
   },
   font: (id)=>activeFont = id,
   lines: (...args)=>{
-    for(let i = 0; i < args.length - 2; i+=2){
-      let a = args[i+2] - args[i];
-      let o = args[i+3] - args[i+1];
-      let h = Math.sqrt(a**2 + o**2);
-      let spin = (o < 0 ? 1 : -1 ) * Math.acos(o/h) / deg;
-      spriteArr.push(args[i] + a / 2, args[i + 1] + o / 2 , lineWidth, h , spin, spin, 1, 1, 0, ...clr);
+    for(let i = 2; i < args.length; i+=2){
+      let a = args[i] - args[i - 2];
+      let o = args[i + 1] - args[i - 1];
+      let h = Math.sqrt(a ** 2 + o ** 2);
+      let spin = Math.atan(-a/o) / deg;
+      spriteArr.push(args[i] - a / 2, args[i + 1] - o / 2 , lineWidth, h , spin, spin, 1, 1, 0, ...clr);
     }
   },
   rect: (x, y, w, h, sX = 0, sY, scaleX = 1, scaleY = 1)=>{

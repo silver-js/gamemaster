@@ -46,7 +46,7 @@ _gfx.loadAtlas(0, roomImg.data, 32);
 _gfx.res(4)
 
 const objArr = [];
-const arrLength = 500;
+const arrLength = 200;
 for(let i = 0; i < arrLength; i ++){
   objArr.push({
     x: Math.random() * 640 - 320,
@@ -141,9 +141,29 @@ const testLoop = ()=>{
   _gfx.spr(0, 10, -32, -132);
   _gfx.spr(0, 11, 0, -132);
   _gfx.spr(0, 12, 32, -132);
-
-  _gfx.lines(-100,-100,100,100)
-  _gfx.lines(200,100,100,120)
+  
+  const circlePoints = (x,y, r, sides)=>{
+  	const arr = [];
+  	const step = 2 * Math.PI / sides;
+  	for(let i = 0; i < sides; i++){
+  		arr.push(
+  			x + Math.sin(step * i)*r*.5,
+  			y + Math.cos(step * i)*r*.5
+  		);
+  	}
+  	arr.push(arr[0],arr[1])
+  	return arr;
+  }
+  _gfx.color(0,255,255,200);
+	_gfx.lines(...circlePoints(-200, -100, 100, 32))
+  _gfx.color(255,255,0,200);
+	_gfx.lines(...circlePoints(-200, -100, 140, 8))
+  _gfx.color(255,0,255,200);
+  _gfx.rect(
+  	-200,-100,
+  	50,50
+  );
+  //_gfx.lines(200,100,100,120)
 
 
 

@@ -10,7 +10,7 @@ This project consists on a simple and modular javascript library, aimed to ease 
 * Refer to the [template](https://github.com/silver-js/gamemaster/tree/main/template) folder for a reference empty project.  
 
 
-### what does each module does?:
+### what does each module do?:
 + This library is made by diferent modules that you can use on any other web based application.  
 + Each module has its own readme file with very simplified examples.  
 + Each module also has some type of simple demo script.  
