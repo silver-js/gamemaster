@@ -1,19 +1,39 @@
-# Ctrl Module
+# Ctrl Module  
 
-## usage:
+## usage:  
 ```
-import {_pad, _padUpdate, _padCfg} from './ctrl_min.js';
-
+import {_pad, _kb, _padUpdate, _padCfg} from './ctrl_min.js';
 
 ```
 
-## how it works:
-  * _pad is an array with virtual pads from 0 to 4.
-  * each virtual pad is an object with 4 axis and 8 buttons.
+## how it works:  
+  * _pad is an array with 5 virtual gamepads from 0 to 4.  
+  * Each virtual gamepad is an object with 4 axis and 8 buttons.  
+  
+  ### _pad[0]
   * _pad[0] is for touch/mouse controls.
-  * touch controls work with different areas that you can define and toggle.
-  * _pad[1] to _pad[4] is for standard controls, can be keyboard or gamepad.
-  * Gamepads connect automatically to the first available pad, to switch between pads just press start + select.
+  * Touch controls work with different areas that you can define and toggle.
+
+  ### Gamepads  
+  * Gamepads connect automatically to the first available _pad[], from 1 to 4.  
+  * To switch to next available _pad[], just press [start + select].  
+
+  ### Keyboard  
+  * Keyboard can switch modes dynamically to take user text inputs, or to work as game input:
+  ```
+  _kb.typeMode(true);                     // on typeMode you store key values to do config or take input
+
+  const pressedKey =_kb.input();          // returns array with char and keycode ie ['e', 'KeyE']
+
+  const currentCfg = _padCfg.getKbMap();  // returns keyboard mappings.
+
+  _padCfg.kbAdd(                          // adds new key mappings
+    {key: 'KeyG', map: [2, 'btn', 2]},
+    {key: 'KeyP', map: [2, 'btn', 1]}
+  );
+  
+  _padCfg.kbRemove('Space', 'Tab');       // removes key mappings, you can send an array of keys to do a cleanup
+  ```
 
 ## general controls:  
 
@@ -58,14 +78,15 @@ usage:
         // if !pointerLock, tracks position.
     ```
 
-  * kb methods:
-    ```
-      _padCfg.getKbMap();  // returns keyboard mappings.
 
-      _padCfg.kbAdd(                        // adds new key mappings
-        {key: 'KeyG', map: [2, 'btn', 2]},
-        {key: 'KeyP', map: [2, 'btn', 1]}
-      );
+# To Do  
 
-      _padCfg.kbRemove('Space', 'Tab');   // removes key mappings
-    ```
+### gamepad  
+- look for joystick bugs  
+- add gamepad deadzone public method
+
+
+### mappings  
+- presets  
+- load/save full conf  
+- 

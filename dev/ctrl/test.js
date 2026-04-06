@@ -1,4 +1,4 @@
-import {_pad, _padUpdate, _padCfg} from './ctrl_min.js';
+import {_pad, _kb, _padUpdate, _padCfg} from './ctrl.js';
 
 // testing setup
 const canv = document.createElement('canvas');
@@ -55,10 +55,10 @@ const drawPad = (pad,x,y)=>{
 
   const bX = x + 86;
   const bY = y + 14;
-  drawBtn(bX + 10, bY + 20, pad.btn[0],8,8);
-  drawBtn(bX, bY + 10, pad.btn[1],8,8);
-  drawBtn(bX + 20, bY + 10, pad.btn[2],8,8);
-  drawBtn(bX + 10, bY, pad.btn[3],8,8);
+  drawBtn(bX + 10, bY, pad.btn[0],8,8);
+  drawBtn(bX + 20, bY + 10, pad.btn[1],8,8);
+  drawBtn(bX + 10, bY + 20, pad.btn[2],8,8);
+  drawBtn(bX, bY + 10, pad.btn[3],8,8);
 
   drawBtn(x + 4, y, pad.btn[4],24,8);
   drawBtn(x + 92, y, pad.btn[5],24,8);
@@ -79,6 +79,10 @@ setInterval(
     ctx.strokeStyle = '#0f0';
     ctx.strokeRect(312 + _pad[0].axis[0] * 32, 172 + _pad[0].axis[1] * 32, 16, 16);
     ctx.fillText(_pad[0].axis[1],100,300)
+    const kbInput = _kb.input();
+    if(kbInput.length) console.log(kbInput)
     _padUpdate()
   },33
 );
+
+_kb.typeMode(false);

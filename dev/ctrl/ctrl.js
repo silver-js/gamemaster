@@ -46,7 +46,6 @@ const mouseMoveEvt = (e)=>{
 const mouseOutEvt = (e)=>{
   _pad[0].axis[2] *= 1.2;
   _pad[0].axis[3] *= 1.2;
-
 }
 let mLockTarget;
 const mouseLockEvt = ()=>{
@@ -168,6 +167,7 @@ const tpEndEvt = (e)=>{
 
 // keyboard /////////////////////////////////////////////////////////
 let kbLock = true;
+const kbInputStream = [];
 const kbArr = [];
 const kbMap = {
   KeyW: [1, 'axis', 1, true],
@@ -208,10 +208,16 @@ const kDwnEvt = (e)=>{
     kbAct[e.code]();
     return;
   }
-  if(kbLock) e.preventDefault();
-  if(kbArr.find(n=>n==e.code))return;
-  kbArr.unshift(e.code);
+  if (kbLock) {
+    e.preventDefault();
+    if (kbArr.find(n => n == e.code)) return;
+    kbArr.unshift(e.code);
+    return;
+  }
+  kbInputStream.push(e.key, e.code);
+  if(kbInputStream.length > 16) kbInputStream.splice(0, 2);
 }
+
 const kUpEvt = (e)=>{
   const i = kbArr.findIndex(n=>n==e.code);
   if(i>=0){
@@ -226,17 +232,21 @@ const kUpEvt = (e)=>{
 
 // gamepad //////////////////////////////////////////////////////////
 const gpArr = [null,null,null,null];
-let gpIndex = 0;
-const gpAlocate = (i)=>{
+let gpSlot = 0;
+let currentSlot = 0;
+const gpAlocate = (id)=>{
   if(gpArr.findIndex(n=>n==null)>=0){
-    while(gpArr[gpIndex] != null){
-      gpIndex = (gpIndex + 1) % 4;
+    while(gpArr[gpSlot] != null){
+      gpSlot = (gpSlot + 1) % 4;
     }
-    gpArr[gpIndex] = i;
-    console.log(`connected to slot ${gpIndex + 1}`);
-    gpIndex = (gpIndex + 1)%4;
+    gpArr[gpSlot] = id;
+    console.log(`connected to slot ${gpSlot + 1}`);
+    currentSlot = gpSlot;
+    gpSlot = (gpSlot + 1)%4;
+    return currentSlot
   }else{
     console.log('no more gamepad slots available');
+    return false
   }
 }
 const gpRemove = (i)=>{
@@ -246,37 +256,70 @@ const gpRemove = (i)=>{
   }
 }
 const gpStart = (e)=>{
-  console.log(e.gamepad.buttons[0])
-  console.log(`${e.gamepad.id} detected.`);
+  console.log(`${e.gamepad.id} detected.`, e);
   gpAlocate(e.gamepad.index);
 }
 const gpEnd = (e)=>{
-  gpRemove(n=>n==e.gamepad.index);
+  gpRemove(e.gamepad.index);
   console.log(`${e.gamepad.id} disconnected.`, gpArr);
 }
-let gpDelay = 0;
+
+const gpSwitchTracker = new Uint8Array(4);
+let gpDeadZone = 0;
+const gpBtnMap = [0, 3, 1, 1, 2, 0, 3, 2, 4, 4, 5, 5, 8, 8, 9, 9];
 const gpUpdate = ()=>{
-  for(const gp of navigator.getGamepads()){
-    if(gp){
-      if(gp.buttons[8].pressed && gp.buttons[9].pressed && gpDelay<performance.now()){
-        gpRemove(gp.index);
-        gpAlocate(gp.index);
-        gpDelay = performance.now()+250;
-      }
-      const padId = gpArr.findIndex(n=>n==gp.index);
-      if(padId>=0){
+  for (let gp of navigator.getGamepads()) {
+    const padId = gpArr.findIndex(n => gp && n === gp.index);
+    if (padId >= 0) {
+      if (gp.buttons[8].pressed && gp.buttons[9].pressed) {
+        if (!gpSwitchTracker[padId]) {
+          gpRemove(gp.index);
+          const pos = gpAlocate(gp.index);
+          if (pos >= 0) {
+            gpSwitchTracker[pos] = 255;
+          }
+        }
+      } else {
+        gpSwitchTracker[padId] = 0
+        const gpMap = gp.buttons.length < 15 ? 0 : 1;
+        
+        // buttons
+        for (let b = 0; b < 8; b++) {
+          _pad[padId + 1].btn[b] = gp.buttons[gpBtnMap[b * 2 + gpMap]].pressed ? 255 : 0;
+        }
+        
+        // axes
         for(let a = 0; a < 4; a++){
-          _pad[padId + 1].axis[a] = gp.axes[a];
-        }
-        for(let b = 0; b < 6; b++){
-          _pad[padId + 1].btn[b] = gp.buttons[b].pressed ? 255 : 0;
-        }
-        for(let b = 8; b < 10; b++){
-          _pad[padId + 1].btn[b-2] = gp.buttons[b].pressed ? 255 : 0;
+					_pad[padId + 1].axis[a] = 0;
+          if(gp.axes[a] > gpDeadZone || gp.axes[a] < -gpDeadZone){
+					  _pad[padId + 1].axis[a] = gp.axes[a];
+          }
+				}
+
+        // triggers
+        if(gp.buttons[6].pressed) _pad[padId + 1].btn[4] = 255;
+        if(gp.buttons[7].pressed) _pad[padId + 1].btn[5] = 255;
+        
+        // check gamepad layouts then update dpad
+        if(gpMap){
+          // standard
+          for (let d = 0; d < 4; d++) {
+            if(gp.buttons[12 + d].pressed){
+              _pad[padId + 1].axis[1 - Math.floor(d / 2)] = (d % 2 - .5) * 2;
+            }
+          }
+        } else {
+          // non-standard
+          if (gp.axes[4] < -gpDeadZone || gp.axes[4] > gpDeadZone) {
+            _pad[padId + 1].axis[0] = gp.axes[4];
+          }
+          if (gp.axes[5] < -gpDeadZone || gp.axes[5] > gpDeadZone) {
+            _pad[padId + 1].axis[1] = gp.axes[5];
+          }
         }
       }
     }
-  }
+	}
 }
 
 
@@ -336,11 +379,20 @@ const pulseUpdate = ()=>{
   }
 }
 
-
 export const _padUpdate = ()=>{
   gpUpdate();
   kbUpdate();
   pulseUpdate();
+}
+
+// keyboard interaction
+export const _kb = {
+  typeMode: (l)=>{
+    kbLock = !l;
+  },
+  input: ()=>{
+    return kbInputStream.splice(0,2);
+  }
 }
 
 
