@@ -1,16 +1,16 @@
-import {_loop, _pad, _cfg} from './gmCore_min.js';
+import {_loop, _pad, _kb, _padCfg} from './gmCore.js';
 // setup
 const canv = document.getElementById('game');
 const ctx = canv.getContext('2d');
 
-_cfg.pointerTarget(canv);
-_cfg.setClock(60);
+_padCfg.pointerTarget(canv);
+_loop.setClock(60);
 
 //_cfg.tpAdd(-1,-.5,.8,.5,'btn',4);
 //_cfg.tpRemove(-1,-.5);
-_cfg.tpAdd(.2,-1,.8,.5,'btn',5);
-_cfg.tpAdd(-1,0,1,1,'stick',[0,1],4);
-_cfg.tpAdd(0,0,1,1,'swipe',[0,1,2,-1],5);
+_padCfg.tpAdd(.2,-1,.8,.5,'btn',5);
+_padCfg.tpAdd(-1,0,1,1,'stick',[0,1],4);
+_padCfg.tpAdd(0,0,1,1,'swipe',[0,1,2,-1],5);
 
 
 // draw methods
@@ -103,6 +103,6 @@ _loop.draw = ()=>{
   drawCircle(pointerX,pointerY,24,'#f008');
 }
 
-_cfg.kbAdd({key: 'KeyY', map: [2, 'btn', 3]});
+_padCfg.kbAdd({key: 'KeyY', map: [2, 'btn', 3]});
 //_cfg.kbRemove('KeyW','KeyJ');
-console.log(_cfg.getKbMap());
+console.log(_padCfg.getKbMap());

@@ -17,6 +17,10 @@ import {_pad, _kb, _padUpdate, _padCfg} from './ctrl_min.js';
   ### Gamepads  
   * Gamepads connect automatically to the first available _pad[], from 1 to 4.  
   * To switch to next available _pad[], just press [start + select].  
+  * If you want to setup deadzones, you can use:
+  	```
+  	_padCfg.deadZone(.1);	//sets deadZone to 10%
+  	```
 
   ### Keyboard  
   * Keyboard can switch modes dynamically to take user text inputs, or to work as game input:
@@ -26,6 +30,8 @@ import {_pad, _kb, _padUpdate, _padCfg} from './ctrl_min.js';
   const pressedKey =_kb.input();          // returns array with char and keycode ie ['e', 'KeyE']
 
   const currentCfg = _padCfg.getKbMap();  // returns keyboard mappings.
+  
+  _padCfg.setKbMap(<strinifiedMaps>)      // sets a full new mapping.
 
   _padCfg.kbAdd(                          // adds new key mappings
     {key: 'KeyG', map: [2, 'btn', 2]},
@@ -77,16 +83,3 @@ usage:
         // if pointerLock, tracks movement, refreshes with _padUpdate().
         // if !pointerLock, tracks position.
     ```
-
-
-# To Do  
-
-### gamepad  
-- look for joystick bugs  
-- add gamepad deadzone public method
-
-
-### mappings  
-- presets  
-- load/save full conf  
-- 

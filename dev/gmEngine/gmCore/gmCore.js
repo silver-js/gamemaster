@@ -1,19 +1,3 @@
-/////////
-// CPU //
-/////////
-
-const timer = new Float64Array(3);                // cpu, gpu, now
-const delay = new Float32Array(3).fill(100 / 3);  // cpu, gpu
-const calcTimeout = ()=>{
-    delay[2] = Math.min(delay[0], delay[1])/4;
-}
-calcTimeout();
-
-export const _loop = {
-  update: ()=>{}, draw: ()=>{},
-}
-
-
 //////////////
 // Gamepads //
 //////////////
@@ -62,7 +46,6 @@ const mouseMoveEvt = (e)=>{
 const mouseOutEvt = (e)=>{
   _pad[0].axis[2] *= 1.2;
   _pad[0].axis[3] *= 1.2;
-
 }
 let mLockTarget;
 const mouseLockEvt = ()=>{
@@ -70,10 +53,6 @@ const mouseLockEvt = ()=>{
 }
 
 // touch controls ///////////////////////////////////////////////////
-
-// visualization
-
-
 const tLockArr = new Float32Array(4);
 const tX = (e)=> (e.changedTouches[0].pageX - pTarget.offsetLeft) / pTarget.offsetWidth * 2 - 1;
 const tY = (e)=> (e.changedTouches[0].pageY - pTarget.offsetTop) / pTarget.offsetHeight * 2 - 1;
@@ -104,7 +83,7 @@ const tpStartEvt = (e)=>{
     document.body.appendChild(a.dom[1]);
     a.dom[1].style.top = a.dY + 'px';
     a.dom[1].style.left = a.dX + 'px';
-    
+
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 255;
@@ -142,8 +121,6 @@ const tpMoveEvt = (e)=>{
       case 'stick':
         _pad[0].axis[a.m[0]] = Math.max(-.2,Math.min(tX(e)-a.oX,.2))*5;
         _pad[0].axis[a.m[1]] = Math.max(-.2,Math.min((tY(e)-a.oY)*tpRatio,.2))*5;
-        a.dom[1].style.left = (a.dX + _pad[0].axis[a.m[0]]*16) + 'px';
-        a.dom[1].style.top = (a.dY + _pad[0].axis[a.m[1]]*16) + 'px';
         break;
       case 'swipe':
         _pad[0].btn[a.m[0]] = (tY(e) - a.oY)*tpRatio > .1 ? 255 : 0;
@@ -158,23 +135,21 @@ const tpMoveEvt = (e)=>{
   }
   if(pLock){
     _pad[0].axis.set([(tX(e) - tLockArr[0]) * 2, (tY(e) - tLockArr[1]) * 2], 2);
-    tLockArr.set([tX(e),tY(e)],2);
+    tLockArr.set([tX(e), tY(e)], 2);
     return;
   }
-  _pad[0].axis.set([tX(e), tY(e)],2);
+  _pad[0].axis.set([tX(e), tY(e)], 2);
 }
 const tpEndEvt = (e)=>{
   if (e.cancelable) e.preventDefault();
   tLockArr.set([0,0]);
   const a = activeArea[e.changedTouches[0].identifier];
   if(a){
-    document.body.removeChild(a.dom[1]);
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 0;
         break;
       case 'stick':
-        document.body.removeChild(a.dom[0]);
         _pad[0].axis[a.m[0]] = 0;
         _pad[0].axis[a.m[1]] = 0;
         break;
@@ -188,7 +163,7 @@ const tpEndEvt = (e)=>{
         break;
     }
     if(a.c>=0){
-      if(tX(e)==a.oX && tY(e)==a.oY){
+      if(tX(e) == a.oX && tY(e) == a.oY){
         _pad[0].btn[a.c] = 255;
         padPulse.push([0,a.c]);
       }
@@ -200,22 +175,11 @@ const tpEndEvt = (e)=>{
 }
 
 // keyboard /////////////////////////////////////////////////////////
+const kbPreset = '{"KeyW":[1,"axis",1,true],"KeyA":[1,"axis",0,true],"KeyS":[1,"axis",1],"KeyD":[1,"axis",0],"Tab":[1,"btn",0],"KeyE":[1,"btn",1],"Space":[1,"btn",2],"KeyQ":[1,"btn",3],"KeyR":[1,"btn",4],"KeyF":[1,"btn",5],"AltLeft":[1,"btn",6],"Enter":[1,"btn",7],"ArrowUp":[1,"axis",3,true],"ArrowLeft":[1,"axis",2,true],"ArrowDown":[1,"axis",3],"ArrowRight":[1,"axis",2]}';
+let kbMap = JSON.parse(kbPreset)
 let kbLock = true;
+const kbInputStream = [];
 const kbArr = [];
-const kbMap = {
-  KeyW: [1, 'axis', 1, true],
-  KeyA: [1, 'axis', 0, true],
-  KeyS: [1, 'axis', 1],
-  KeyD: [1, 'axis', 0],
-  KeyN: [1, 'btn', 0],
-  KeyM: [1, 'btn', 1],
-  Space: [1, 'btn', 2],
-  AltLeft: [1, 'btn', 3],
-  KeyQ: [1, 'btn', 4],
-  KeyE: [1, 'btn', 5],
-  Tab: [1, 'btn', 6],
-  Enter: [1, 'btn', 7],
-}
 const kbAct = {
   F10: ()=> kbLock = !kbLock
 }
@@ -241,10 +205,16 @@ const kDwnEvt = (e)=>{
     kbAct[e.code]();
     return;
   }
-  if(kbLock) e.preventDefault();
-  if(kbArr.find(n=>n==e.code))return;
-  kbArr.unshift(e.code);
+  if (kbLock) {
+    e.preventDefault();
+    if (kbArr.find(n => n == e.code)) return;
+    kbArr.unshift(e.code);
+    return;
+  }
+  kbInputStream.push(e.key, e.code);
+  if(kbInputStream.length > 16) kbInputStream.splice(0, 2);
 }
+
 const kUpEvt = (e)=>{
   const i = kbArr.findIndex(n=>n==e.code);
   if(i>=0){
@@ -259,17 +229,21 @@ const kUpEvt = (e)=>{
 
 // gamepad //////////////////////////////////////////////////////////
 const gpArr = [null,null,null,null];
-let gpIndex = 0;
-const gpAlocate = (i)=>{
+let gpSlot = 0;
+let currentSlot = 0;
+const gpAlocate = (id)=>{
   if(gpArr.findIndex(n=>n==null)>=0){
-    while(gpArr[gpIndex] != null){
-      gpIndex = (gpIndex + 1) % 4;
+    while(gpArr[gpSlot] != null){
+      gpSlot = (gpSlot + 1) % 4;
     }
-    gpArr[gpIndex] = i;
-    console.log(`connected to slot ${gpIndex + 1}`);
-    gpIndex = (gpIndex + 1)%4;
+    gpArr[gpSlot] = id;
+    console.log(`connected to slot ${gpSlot + 1}`);
+    currentSlot = gpSlot;
+    gpSlot = (gpSlot + 1)%4;
+    return currentSlot
   }else{
     console.log('no more gamepad slots available');
+    return false
   }
 }
 const gpRemove = (i)=>{
@@ -279,37 +253,69 @@ const gpRemove = (i)=>{
   }
 }
 const gpStart = (e)=>{
-  console.log(e.gamepad.buttons[0])
-  console.log(`${e.gamepad.id} detected.`);
+  console.log(`${e.gamepad.id} detected.`, e);
   gpAlocate(e.gamepad.index);
 }
 const gpEnd = (e)=>{
-  gpRemove(n=>n==e.gamepad.index);
+  gpRemove(e.gamepad.index);
   console.log(`${e.gamepad.id} disconnected.`, gpArr);
 }
-let gpDelay = 0;
+
+const gpSwitchTracker = new Uint8Array(4);
+const gpBtnMap = [0, 3, 1, 1, 2, 0, 3, 2, 4, 4, 5, 5, 8, 8, 9, 9];
 const gpUpdate = ()=>{
-  for(const gp of navigator.getGamepads()){
-    if(gp){
-      if(gp.buttons[8].pressed && gp.buttons[9].pressed && gpDelay<performance.now()){
-        gpRemove(gp.index);
-        gpAlocate(gp.index);
-        gpDelay = performance.now()+250;
-      }
-      const padId = gpArr.findIndex(n=>n==gp.index);
-      if(padId>=0){
+  for (let gp of navigator.getGamepads()) {
+    const padId = gpArr.findIndex(n => gp && n === gp.index);
+    if (padId >= 0) {
+      if (gp.buttons[8].pressed && gp.buttons[9].pressed) {
+        if (!gpSwitchTracker[padId]) {
+          gpRemove(gp.index);
+          const pos = gpAlocate(gp.index);
+          if (pos >= 0) {
+            gpSwitchTracker[pos] = 255;
+          }
+        }
+      } else {
+        gpSwitchTracker[padId] = 0
+        const gpMap = gp.buttons.length < 15 ? 0 : 1;
+        
+        // buttons
+        for (let b = 0; b < 8; b++) {
+          _pad[padId + 1].btn[b] = gp.buttons[gpBtnMap[b * 2 + gpMap]].pressed ? 255 : 0;
+        }
+        
+        // axes
         for(let a = 0; a < 4; a++){
-          _pad[padId + 1].axis[a] = gp.axes[a];
-        }
-        for(let b = 0; b < 6; b++){
-          _pad[padId + 1].btn[b] = gp.buttons[b].pressed ? 255 : 0;
-        }
-        for(let b = 8; b < 10; b++){
-          _pad[padId + 1].btn[b-2] = gp.buttons[b].pressed ? 255 : 0;
+					_pad[padId + 1].axis[a] = 0;
+          if(Math.abs(gp.axes[a]) > 0){
+					  _pad[padId + 1].axis[a] = gp.axes[a];
+          }
+				}
+
+        // triggers
+        if(gp.buttons[6].pressed) _pad[padId + 1].btn[4] = 255;
+        if(gp.buttons[7].pressed) _pad[padId + 1].btn[5] = 255;
+        
+        // check gamepad layouts then update dpad
+        if(gpMap){
+          // standard
+          for (let d = 0; d < 4; d++) {
+            if(gp.buttons[12 + d].pressed){
+              _pad[padId + 1].axis[1 - Math.floor(d / 2)] = (d % 2 - .5) * 2;
+            }
+          }
+        } else {
+          // non-standard
+          if (Math.abs(gp.axes[4]) > 0) {
+            _pad[padId + 1].axis[0] = gp.axes[4];
+          }
+          if (Math.abs(gp.axes[5]) > 0) {
+            _pad[padId + 1].axis[1] = gp.axes[5];
+          }
         }
       }
     }
-  }
+	}
 }
 
 
@@ -369,53 +375,28 @@ const pulseUpdate = ()=>{
   }
 }
 
-//////////////////
-// Flow Control //
-//////////////////
-
-const flow = ()=>{
-  timer[2] = performance.now();
-  while(timer[0] < timer[2]){
-    gpUpdate();
-    kbUpdate();
-    _loop.update();
-    pulseUpdate();
-    timer[0] += delay[0];
-  }
-  if(timer[1] < timer[2]){
-    _loop.draw();
-    while(timer[1] < timer[2]){
-      timer[1] += delay[1];
-    }
-  }
-  setTimeout(flow, delay[2]);
+export const _padUpdate = ()=>{
+  gpUpdate();
+  kbUpdate();
+  pulseUpdate();
 }
-flow();
+
+// keyboard interaction
+export const _kb = {
+  typeMode: (l)=>{
+    kbLock = !l;
+  },
+  input: ()=>{
+    return kbInputStream.splice(0,2);
+  }
+}
 
 
 ////////////////////
 // Config Methods //
 ////////////////////
 
-const areaDom = ()=>{
-  const res = [
-    document.createElement('div'),
-    document.createElement('div')
-  ];
-  res[0].style = 'transform:translate(-10vmin,-10vmin);z-index:99;user-select:none;position:fixed;width:20vmin;height:20vmin;border-radius:50%;background:#5552;';
-  res[1].style = 'transform:translate(-5vmin,-5vmin);z-index:100;user-select:none;position:fixed;width:10vmin;height:10vmin;border-radius:50%;background:#5552;';
-  return res;
-} 
-
-export const _cfg = {
-  setClock: (x)=>{
-    delay[0] = 1000 / x;
-    calcTimeout();
-  },
-  setFps: (x)=>{
-    delay[1] = 1000 / x;
-    calcTimeout();
-  },
+export const _padCfg = {
   pointerTarget: (a)=>{
     newPTarget(a);
   },
@@ -427,21 +408,17 @@ export const _cfg = {
       }
       mLockTarget = pTarget;
       pTarget.addEventListener('click', mouseLockEvt);
+      console.log('pointerLock on');
     }else{
       if(mLockTarget){
         mLockTarget.removeEventListener('click', mouseLockEvt);
       }
       document.exitPointerLock();
+      console.log('pointerLock off');
     }
   },
   tpAdd: (x, y, w, h, t, m, c)=>{
-    tpArea.push({
-      x, y, w, h,
-      t, m, c,
-      dom: areaDom(),
-      dX: 0, dY: 0,
-      oX:0, oY:0
-    });
+    tpArea.push({x, y, w, h, t, m, c, oX:0, oY:0});
   },
   tpRemove: (x, y)=>{
     const i = tpArea.findIndex(n=>{
@@ -454,6 +431,9 @@ export const _cfg = {
     }
   },
   getKbMap: ()=> kbMap,
+  setKbMap: (mapString)=>{
+    kbMap = JSON.parse(mapString);
+  },
   kbAdd: (...args)=>{
     args.forEach(n=>{
       kbMap[n.key] = n.map;
@@ -465,3 +445,45 @@ export const _cfg = {
     });
   }
 }
+
+//////////
+// loop //
+//////////
+
+const timer = new Float64Array(6).fill(100 / 3);  // cpu, cDelay, gpu, gDelay, now, delay
+
+const calcTimeout = ()=>{
+    timer[5] = Math.min(timer[1], timer[3])/4;
+}
+
+export const _loop = {
+  update: ()=>{},
+  draw: ()=>{},
+  setClock: (x)=>{
+    timer[1] = 1000 / x;
+    calcTimeout();
+  },
+  setFps: (x)=>{
+    timer[3] = 1000 / x;
+    calcTimeout();
+  }
+}
+
+const tick = ()=>{
+  timer[4] = performance.now();
+  while(timer[0] < timer[4]){
+    _padUpdate();
+    _loop.update();
+    timer[0] += (timer[4] - timer[0]) > (8 * timer[1]) ? timer[1] * 8 : timer[1];
+  }
+  if(timer[2] < timer[4]){
+    _loop.draw();
+    while(timer[2] < timer[4]){
+      timer[2] += timer[3];
+    }
+  }
+  setTimeout(tick, timer[5]);
+}
+
+calcTimeout();
+tick();

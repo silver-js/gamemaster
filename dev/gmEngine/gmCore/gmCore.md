@@ -7,14 +7,14 @@
 ### import:
 
 ```
-import {_loop, _pad, _cfg} from './gmCore_min.js';
+import {_loop, _pad, _kb, _padCfg} from './gmCore_min.js';
 ```
 
 
 ### _loop:
 
 - The loop object contains two empty functions, 'update' is for handling the game logic, it runs a fixed amount of times per second, and 'draw' is for handling graphics, it can skip frames if needed to mantain a stable pace.  
-- The update and draw functions refresh rate can be configured with the '_cfg' element.  
+- The update and draw functions refresh rate can be configured with `loop.setClock()` and `_loop.setFps()` methods.  
 
 ```
 _loop.update = ()=>{
@@ -31,9 +31,9 @@ _loop.draw = ()=>{
   /////////////////////////
 }
 
-_cfg.setClock(60);    // sets the game logic to 60 updates per second.
+_loop.setClock(60);    // sets the game logic to 60 updates per second.
 
-_cfg.setFps(60);      // sets the draw function to a max 60fps.
+_loop.setFps(60);      // sets the draw function to a max 60fps.
 ```
 
 
@@ -44,19 +44,19 @@ _cfg.setFps(60);      // sets the draw function to a max 60fps.
 - _pad[1 to 4] are for keyboard and joystick controls.  
 - each _pad element consists of 4 axis and 8 buttons, each axis goes from -1 to 1, and each button is either 0 or 255;  
 - gamepads can switch to the next unused _pad by pressing start+select(buttons 6 and 7).  
-- mouse and touch support is enabled by adding the target area element from the _cfg element:  
+- mouse and touch support is enabled by adding the target area element from the _padCfg object:  
 ```
-_cfg.pointerTarget(<DOM element>);
+_padCfg.pointerTarget(<DOM element>);
 ```
-- touch buttons and gestures can be also added from the _cfg element, examples:  
+- touch buttons and gestures can be also added from the _padCfg object, examples:  
 ```
-_cfg.tpAdd(-1,-.5,.8,.5,'btn',4);   // (x_position, y_position, width, height, area_type, mapping, extra_action)
+_padCfg.tpAdd(-1,-.5,.8,.5,'btn',4);   // (x_position, y_position, width, height, area_type, mapping, extra_action)
 
-_cfg.tpRemove(-1,-.5);
+_padCfg.tpRemove(-1,-.5);
 
-_cfg.tpAdd(-1,0,1,1,'stick',[0,1],4);
+_padCfg.tpAdd(-1,0,1,1,'stick',[0,1],4);
 
-_cfg.tpAdd(0,0,1,1,'swipe',[0,1,2,-1],5);
+_padCfg.tpAdd(0,0,1,1,'swipe',[0,1,2,-1],5);
 
 ```
 
@@ -67,19 +67,27 @@ _cfg.tpAdd(0,0,1,1,'swipe',[0,1,2,-1],5);
 
 - area remove, if needed you can also remove areas with their x,y coordinates like in the example.
 
-- another feature is pointerLock, if pointerLock is active, you can handle games that require a locked mouse pointer, and also works with touch controls:
+- another feature is pointerLock, if pointerLock is active, you can handle games that require a locked mouse pointer, and also works with touch controls to work more like a trackpad:
 ```
-_cfg.pointerLock(<boolean>);
-
-```
-
-- keyboard configuration is also handled with the _cfg element:
+_padCfg.pointerLock(<boolean>);
 
 ```
-_cfg.kbAdd({key: 'KeyY', map: [2, 'btn', 3]});
-_cfg.kbRemove('KeyW','KeyJ');
-console.log(_cfg.getKbMap());
+
+- keyboard configuration is also handled with the _padCfg object:
+
+```
+_padCfg.kbAdd({key: 'KeyY', map: [2, 'btn', 3]});
+_padCfg.kbRemove('KeyW','KeyJ');
+console.log(_padCfg.getKbMap());
 ```
 
+### keyboard:  
 
-toDo : visualization of touches
+- the `_kb` object is a keyboard helper for handling direct key inputs.
+
+```
+_kb.typeMode(<boolean>) // sets typeMode on/off, on typeMode _pad inputs by keyboard are disabled.
+
+const pressedKey =_kb.input();          // returns array with char and keycode ie ['e', 'KeyE']
+
+```  

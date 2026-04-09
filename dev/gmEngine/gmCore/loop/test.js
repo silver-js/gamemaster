@@ -1,4 +1,4 @@
-import {_loop} from './loop_min.js';
+import {_loop} from './loop.js';
 let timer = performance.now() + 1000;
 let ups = 0;
 let fps = 0;

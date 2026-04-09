@@ -78,11 +78,20 @@ const tpStartEvt = (e)=>{
   areaCheck(x, y, e.changedTouches[0].identifier);
   const a = activeArea[e.changedTouches[0].identifier];
   if(a){
+    a.dX = e.changedTouches[0].pageX;
+    a.dY = e.changedTouches[0].pageY;
+    document.body.appendChild(a.dom[1]);
+    a.dom[1].style.top = a.dY + 'px';
+    a.dom[1].style.left = a.dX + 'px';
+
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 255;
         break;
       case 'stick':
+        document.body.appendChild(a.dom[0]);
+        a.dom[0].style.top = a.dY + 'px';
+        a.dom[0].style.left = a.dX + 'px';
         a.oX = x;
         a.oY = y;
         _pad[0].axis[a.m[0]] = 0;
@@ -126,10 +135,10 @@ const tpMoveEvt = (e)=>{
   }
   if(pLock){
     _pad[0].axis.set([(tX(e) - tLockArr[0]) * 2, (tY(e) - tLockArr[1]) * 2], 2);
-    tLockArr.set([tX(e),tY(e)],2);
+    tLockArr.set([tX(e), tY(e)], 2);
     return;
   }
-  _pad[0].axis.set([tX(e), tY(e)],2);
+  _pad[0].axis.set([tX(e), tY(e)], 2);
 }
 const tpEndEvt = (e)=>{
   if (e.cancelable) e.preventDefault();
@@ -154,7 +163,7 @@ const tpEndEvt = (e)=>{
         break;
     }
     if(a.c>=0){
-      if(tX(e)==a.oX && tY(e)==a.oY){
+      if(tX(e) == a.oX && tY(e) == a.oY){
         _pad[0].btn[a.c] = 255;
         padPulse.push([0,a.c]);
       }
@@ -166,23 +175,11 @@ const tpEndEvt = (e)=>{
 }
 
 // keyboard /////////////////////////////////////////////////////////
+const kbPreset = '{"KeyW":[1,"axis",1,true],"KeyA":[1,"axis",0,true],"KeyS":[1,"axis",1],"KeyD":[1,"axis",0],"Tab":[1,"btn",0],"KeyE":[1,"btn",1],"Space":[1,"btn",2],"KeyQ":[1,"btn",3],"KeyR":[1,"btn",4],"KeyF":[1,"btn",5],"AltLeft":[1,"btn",6],"Enter":[1,"btn",7],"ArrowUp":[1,"axis",3,true],"ArrowLeft":[1,"axis",2,true],"ArrowDown":[1,"axis",3],"ArrowRight":[1,"axis",2]}';
+let kbMap = JSON.parse(kbPreset)
 let kbLock = true;
 const kbInputStream = [];
 const kbArr = [];
-const kbMap = {
-  KeyW: [1, 'axis', 1, true],
-  KeyA: [1, 'axis', 0, true],
-  KeyS: [1, 'axis', 1],
-  KeyD: [1, 'axis', 0],
-  KeyN: [1, 'btn', 0],
-  KeyM: [1, 'btn', 1],
-  Space: [1, 'btn', 2],
-  AltLeft: [1, 'btn', 3],
-  KeyQ: [1, 'btn', 4],
-  KeyE: [1, 'btn', 5],
-  Tab: [1, 'btn', 6],
-  Enter: [1, 'btn', 7],
-}
 const kbAct = {
   F10: ()=> kbLock = !kbLock
 }
@@ -265,7 +262,6 @@ const gpEnd = (e)=>{
 }
 
 const gpSwitchTracker = new Uint8Array(4);
-let gpDeadZone = 0;
 const gpBtnMap = [0, 3, 1, 1, 2, 0, 3, 2, 4, 4, 5, 5, 8, 8, 9, 9];
 const gpUpdate = ()=>{
   for (let gp of navigator.getGamepads()) {
@@ -291,7 +287,7 @@ const gpUpdate = ()=>{
         // axes
         for(let a = 0; a < 4; a++){
 					_pad[padId + 1].axis[a] = 0;
-          if(gp.axes[a] > gpDeadZone || gp.axes[a] < -gpDeadZone){
+          if(Math.abs(gp.axes[a]) > 0){
 					  _pad[padId + 1].axis[a] = gp.axes[a];
           }
 				}
@@ -310,10 +306,10 @@ const gpUpdate = ()=>{
           }
         } else {
           // non-standard
-          if (gp.axes[4] < -gpDeadZone || gp.axes[4] > gpDeadZone) {
+          if (Math.abs(gp.axes[4]) > 0) {
             _pad[padId + 1].axis[0] = gp.axes[4];
           }
-          if (gp.axes[5] < -gpDeadZone || gp.axes[5] > gpDeadZone) {
+          if (Math.abs(gp.axes[5]) > 0) {
             _pad[padId + 1].axis[1] = gp.axes[5];
           }
         }
@@ -435,6 +431,9 @@ export const _padCfg = {
     }
   },
   getKbMap: ()=> kbMap,
+  setKbMap: (mapString)=>{
+    kbMap = JSON.parse(mapString);
+  },
   kbAdd: (...args)=>{
     args.forEach(n=>{
       kbMap[n.key] = n.map;
@@ -446,3 +445,45 @@ export const _padCfg = {
     });
   }
 }
+
+//////////
+// loop //
+//////////
+
+const timer = new Float64Array(6).fill(100 / 3);  // cpu, cDelay, gpu, gDelay, now, delay
+
+const calcTimeout = ()=>{
+    timer[5] = Math.min(timer[1], timer[3])/4;
+}
+
+export const _loop = {
+  update: ()=>{},
+  draw: ()=>{},
+  setClock: (x)=>{
+    timer[1] = 1000 / x;
+    calcTimeout();
+  },
+  setFps: (x)=>{
+    timer[3] = 1000 / x;
+    calcTimeout();
+  }
+}
+
+const tick = ()=>{
+  timer[4] = performance.now();
+  while(timer[0] < timer[4]){
+    _padUpdate();
+    _loop.update();
+    timer[0] += (timer[4] - timer[0]) > (8 * timer[1]) ? timer[1] * 8 : timer[1];
+  }
+  if(timer[2] < timer[4]){
+    _loop.draw();
+    while(timer[2] < timer[4]){
+      timer[2] += timer[3];
+    }
+  }
+  setTimeout(tick, timer[5]);
+}
+
+calcTimeout();
+tick();

@@ -51,7 +51,7 @@ function Branch(element){
 	this.clear = ()=>{
 		this.dom.innerHTML = '';
 		if(styleBranch) this.add(styleBranch);
-		if(scopedStyleBranch) this.add(scopedStyleBranch);
+		if(scopeStyleBranch) this.add(scopeStyleBranch);
 	}
 }
 

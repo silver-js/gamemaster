@@ -1,1 +1,0 @@
-const o=new Float64Array(3),e=new Float32Array(3).fill(100/3),t=()=>{e[2]=Math.min(e[0],e[1])/4};t();export const _loop={update:()=>{},draw:()=>{},setClock:o=>{e[0]=1e3/o,t()},setFps:o=>{e[1]=1e3/o,t()}};const r=()=>{for(o[2]=performance.now();o[0]<o[2];)_loop.update(),o[0]+=e[0];if(o[1]<o[2])for(_loop.draw();o[1]<o[2];)o[1]+=e[1];setTimeout(r,e[2])};r();

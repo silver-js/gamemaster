@@ -35,3 +35,15 @@ body{
   justify-content: center;
   gap: .5rem;
 }
+
+.flex-list{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+}
+.flex-list li{
+  width: 12rem;
+  box-shadow: 0 0 2px #fff;
+}

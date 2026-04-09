@@ -28,7 +28,7 @@ _padCfg.kbAdd(                        // adds new key mappings
   {key: 'KeyP', map: [2, 'btn', 1]}
 );
 
-_padCfg.kbRemove('Space', 'Tab');   // removes key mappings
+//_padCfg.kbRemove('Space', 'Tab');   // removes key mappings
 
 
 // testing code

@@ -42,6 +42,7 @@ navLoadSave.add(
 navLoadSave.add(branch('li', {
     txt: 'Save', classAdd: 'clickable'
 })).dom.addEventListener('click', ()=>{
+    console.log(uImgData);
   alert('here goes the "save to file" script');
 });
 
@@ -79,7 +80,7 @@ navSectionsArr.forEach(n=>{
 });
 
 // main
-const main = branch(`main`);
+const main = branch('main', {scopedStyle: 'padding: .5rem; section{box-shadow: 0 0 1px #fff; padding: .3rem}'});
 trunk.add(main);
 
 // page modes handler
@@ -104,3 +105,6 @@ const updateMode = (mode)=>{
   }
   navSectionsArr.forEach(n=>n.classRemove('selected'))
 }
+
+// defaulting to images tab
+navSectionsArr[0].dom.click();

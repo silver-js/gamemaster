@@ -1,0 +1,1 @@
+const o=new Float64Array(6).fill(100/3),e=()=>{o[5]=Math.min(o[1],o[3])/4};export const _loop={update:()=>{},draw:()=>{},setClock:t=>{o[1]=1e3/t,e()},setFps:t=>{o[3]=1e3/t,e()}};const t=()=>{for(o[4]=performance.now();o[0]<o[4];)_loop.update(),o[0]+=o[4]-o[0]>8*o[1]?8*o[1]:o[1];if(o[2]<o[4])for(_loop.draw();o[2]<o[4];)o[2]+=o[3];setTimeout(t,o[5])};e(),t();
