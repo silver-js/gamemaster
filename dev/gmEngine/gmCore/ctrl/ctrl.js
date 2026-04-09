@@ -80,18 +80,12 @@ const tpStartEvt = (e)=>{
   if(a){
     a.dX = e.changedTouches[0].pageX;
     a.dY = e.changedTouches[0].pageY;
-    document.body.appendChild(a.dom[1]);
-    a.dom[1].style.top = a.dY + 'px';
-    a.dom[1].style.left = a.dX + 'px';
 
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 255;
         break;
       case 'stick':
-        document.body.appendChild(a.dom[0]);
-        a.dom[0].style.top = a.dY + 'px';
-        a.dom[0].style.left = a.dX + 'px';
         a.oX = x;
         a.oY = y;
         _pad[0].axis[a.m[0]] = 0;

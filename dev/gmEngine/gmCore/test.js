@@ -4,7 +4,7 @@ const canv = document.getElementById('game');
 const ctx = canv.getContext('2d');
 
 _padCfg.pointerTarget(canv);
-_loop.setClock(60);
+_loop.setClock(10);
 
 //_cfg.tpAdd(-1,-.5,.8,.5,'btn',4);
 //_cfg.tpRemove(-1,-.5);
@@ -69,10 +69,10 @@ _loop.update = ()=>{
   pointerX = Math.min(640,Math.max((pointerX + _pad[0].axis[2]*32), 0));
   pointerY = Math.min(360,Math.max((pointerY + _pad[0].axis[3]*32), 0));
   if(_pad[0].btn[4]){
-    _cfg.pointerLock(true);
+    _padCfg.pointerLock(true);
   }
   if(_pad[0].btn[5]){
-    _cfg.pointerLock(false);
+    _padCfg.pointerLock(false);
   }
 }
 _loop.draw = ()=>{
