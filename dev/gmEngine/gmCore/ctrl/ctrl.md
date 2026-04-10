@@ -5,7 +5,7 @@
 import {_pad, _kb, _padUpdate, _padCfg} from './ctrl_min.js';
 
 // instde the game loop:
-_padUpdate();					snapshots the gamepad states, you need to call it once per game update
+_padUpdate();					//gamepad heartbeat, you need to call it once per game update
 if(_pad[1].btn[2]){
 	player.jump();
 }

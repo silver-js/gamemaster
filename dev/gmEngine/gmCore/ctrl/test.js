@@ -21,6 +21,12 @@ _padCfg.tpAdd(                  // adds a specific touch area to interact as a b
 
 _padCfg.tpRemove(-1,-1);        // removes a touch area, just needs x,y coordinates.
 
+_padCfg.tpAdd(
+  -1, -1, .5, .5,
+  'swipe',
+  [1, 2, 3, 4], 5
+)
+
 console.log(_padCfg.getKbMap());  // returns keyboard mappings.
 
 _padCfg.kbAdd(                        // adds new key mappings
@@ -70,7 +76,10 @@ const drawPad = (pad,x,y)=>{
 
 setInterval(
   function(){
+    _padUpdate();
     ctx.clearRect(0,0,640,360);
+    ctx.fillStyle = `rgb(${Math.random()*256}, ${Math.random()*256}, ${Math.random()*256})`;
+    ctx.fillRect(0, 0, 10, 10);
     drawPad(_pad[0], 200,200);
     drawPad(_pad[1], 4, 4);
     drawPad(_pad[2], 176, 4);
@@ -81,8 +90,7 @@ setInterval(
     ctx.fillText(_pad[0].axis[1],100,300)
     const kbInput = _kb.input();
     if(kbInput.length) console.log(kbInput)
-    _padUpdate()
-  },33
+  },500
 );
 
 _kb.typeMode(false);

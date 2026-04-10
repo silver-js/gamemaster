@@ -158,8 +158,7 @@ const tpEndEvt = (e)=>{
     }
     if(a.c>=0){
       if(tX(e) == a.oX && tY(e) == a.oY){
-        _pad[0].btn[a.c] = 255;
-        padPulse.push([0,a.c]);
+        padPulse.push([0, a.c, 0]);
       }
     }
     delete activeArea[e.changedTouches[0].identifier];
@@ -357,9 +356,11 @@ window.addEventListener('gamepaddisconnected', gpEnd);
 // update ///////////////////////////////////////////////////////////
 const pulseUpdate = ()=>{
   // pad pulse
-  for(let i = padPulse.length; i > 0; i--){
-    const p = padPulse.pop();
-    _pad[p[0]].btn[p[1]] = 0;
+  for(let i = padPulse.length - 1; i >= 0; i--){
+    const p = padPulse[i];
+    _pad[p[0]].btn[p[1]] = p[2] == 1 ? 0 : 255;
+    if(p[2] == 1) padPulse.pop();
+    p[2] = 1; 
   }
   // pointer lock
   if(pLock){
