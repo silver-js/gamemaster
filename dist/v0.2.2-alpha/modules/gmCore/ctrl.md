@@ -4,6 +4,11 @@
 ```
 import {_pad, _kb, _padUpdate, _padCfg} from './ctrl_min.js';
 
+// instde the game loop:
+_padUpdate();					//gamepad heartbeat, you need to call it once per game update
+if(_pad[1].btn[2]){
+	player.jump();
+}
 ```
 
 ## how it works:  
@@ -17,10 +22,6 @@ import {_pad, _kb, _padUpdate, _padCfg} from './ctrl_min.js';
   ### Gamepads  
   * Gamepads connect automatically to the first available _pad[], from 1 to 4.  
   * To switch to next available _pad[], just press [start + select].  
-  * If you want to setup deadzones, you can use:
-  	```
-  	_padCfg.deadZone(.1);	//sets deadZone to 10%
-  	```
 
   ### Keyboard  
   * Keyboard can switch modes dynamically to take user text inputs, or to work as game input:

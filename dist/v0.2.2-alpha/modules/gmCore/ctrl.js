@@ -117,10 +117,10 @@ const tpMoveEvt = (e)=>{
         _pad[0].axis[a.m[1]] = Math.max(-.2,Math.min((tY(e)-a.oY)*tpRatio,.2))*5;
         break;
       case 'swipe':
-        _pad[0].btn[a.m[0]] = (tY(e) - a.oY)*tpRatio > .1 ? 255 : 0;
+        _pad[0].btn[a.m[0]] = (tY(e) - a.oY) * tpRatio < -.1 ? 255 : 0;
         _pad[0].btn[a.m[1]] = tX(e) - a.oX > .1 ? 255 : 0;
-        _pad[0].btn[a.m[2]] = tX(e) - a.oX < -.1 ? 255 : 0;
-        _pad[0].btn[a.m[3]] = (tY(e) - a.oY)*tpRatio < -.1 ? 255 : 0;
+        _pad[0].btn[a.m[2]] = (tY(e) - a.oY) * tpRatio > .1 ? 255 : 0;
+        _pad[0].btn[a.m[3]] = tX(e) - a.oX < -.1 ? 255 : 0;
         break;
       default:
         break;
@@ -158,8 +158,7 @@ const tpEndEvt = (e)=>{
     }
     if(a.c>=0){
       if(tX(e) == a.oX && tY(e) == a.oY){
-        _pad[0].btn[a.c] = 255;
-        padPulse.push([0,a.c]);
+        padPulse.push([0, a.c, 0]);
       }
     }
     delete activeArea[e.changedTouches[0].identifier];
@@ -357,9 +356,11 @@ window.addEventListener('gamepaddisconnected', gpEnd);
 // update ///////////////////////////////////////////////////////////
 const pulseUpdate = ()=>{
   // pad pulse
-  for(let i = padPulse.length; i > 0; i--){
-    const p = padPulse.pop();
-    _pad[p[0]].btn[p[1]] = 0;
+  for(let i = padPulse.length - 1; i >= 0; i--){
+    const p = padPulse[i];
+    _pad[p[0]].btn[p[1]] = p[2] == 1 ? 0 : 255;
+    if(p[2] == 1) padPulse.pop();
+    p[2] = 1; 
   }
   // pointer lock
   if(pLock){
@@ -439,45 +440,3 @@ export const _padCfg = {
     });
   }
 }
-
-//////////
-// loop //
-//////////
-
-const timer = new Float64Array(6).fill(100 / 3);  // cpu, cDelay, gpu, gDelay, now, delay
-
-const calcTimeout = ()=>{
-    timer[5] = Math.min(timer[1], timer[3])/4;
-}
-
-export const _loop = {
-  update: ()=>{},
-  draw: ()=>{},
-  setClock: (x)=>{
-    timer[1] = 1000 / x;
-    calcTimeout();
-  },
-  setFps: (x)=>{
-    timer[3] = 1000 / x;
-    calcTimeout();
-  }
-}
-
-const tick = ()=>{
-  timer[4] = performance.now();
-  while(timer[0] < timer[4]){
-    _loop.update();
-    _padUpdate();
-    timer[0] += (timer[4] - timer[0]) > (8 * timer[1]) ? timer[1] * 8 : timer[1];
-  }
-  if(timer[2] < timer[4]){
-    _loop.draw();
-    while(timer[2] < timer[4]){
-      timer[2] += timer[3];
-    }
-  }
-  setTimeout(tick, timer[5]);
-}
-
-calcTimeout();
-tick();

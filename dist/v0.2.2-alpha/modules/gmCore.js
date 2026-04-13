@@ -78,6 +78,9 @@ const tpStartEvt = (e)=>{
   areaCheck(x, y, e.changedTouches[0].identifier);
   const a = activeArea[e.changedTouches[0].identifier];
   if(a){
+    a.dX = e.changedTouches[0].pageX;
+    a.dY = e.changedTouches[0].pageY;
+
     switch(a.t){
       case 'btn':
         _pad[0].btn[a.m] = 255;
@@ -114,10 +117,10 @@ const tpMoveEvt = (e)=>{
         _pad[0].axis[a.m[1]] = Math.max(-.2,Math.min((tY(e)-a.oY)*tpRatio,.2))*5;
         break;
       case 'swipe':
-        _pad[0].btn[a.m[0]] = (tY(e) - a.oY)*tpRatio > .1 ? 255 : 0;
+        _pad[0].btn[a.m[0]] = (tY(e) - a.oY) * tpRatio < -.1 ? 255 : 0;
         _pad[0].btn[a.m[1]] = tX(e) - a.oX > .1 ? 255 : 0;
-        _pad[0].btn[a.m[2]] = tX(e) - a.oX < -.1 ? 255 : 0;
-        _pad[0].btn[a.m[3]] = (tY(e) - a.oY)*tpRatio < -.1 ? 255 : 0;
+        _pad[0].btn[a.m[2]] = (tY(e) - a.oY) * tpRatio > .1 ? 255 : 0;
+        _pad[0].btn[a.m[3]] = tX(e) - a.oX < -.1 ? 255 : 0;
         break;
       default:
         break;
@@ -436,3 +439,45 @@ export const _padCfg = {
     });
   }
 }
+
+//////////
+// loop //
+//////////
+
+const timer = new Float64Array(6).fill(100 / 3);  // cpu, cDelay, gpu, gDelay, now, delay
+
+const calcTimeout = ()=>{
+    timer[5] = Math.min(timer[1], timer[3])/4;
+}
+
+export const _loop = {
+  update: ()=>{},
+  draw: ()=>{},
+  setClock: (x)=>{
+    timer[1] = 1000 / x;
+    calcTimeout();
+  },
+  setFps: (x)=>{
+    timer[3] = 1000 / x;
+    calcTimeout();
+  }
+}
+
+const tick = ()=>{
+  timer[4] = performance.now();
+  while(timer[0] < timer[4]){
+    _padUpdate();
+    _loop.update();
+    timer[0] += (timer[4] - timer[0]) > (8 * timer[1]) ? timer[1] * 8 : timer[1];
+  }
+  if(timer[2] < timer[4]){
+    _loop.draw();
+    while(timer[2] < timer[4]){
+      timer[2] += timer[3];
+    }
+  }
+  setTimeout(tick, timer[5]);
+}
+
+calcTimeout();
+tick();

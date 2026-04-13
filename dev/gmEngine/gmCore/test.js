@@ -37,24 +37,24 @@ const drawPad = (x,y,pad)=>{
 
   drawCircle(x+108,y+32,16,'#fff8');
 
-  ctx.fillStyle=pad.btn[0]?'#f00':'#0808';   //btn0
-  ctx.fillRect(x+104,y+37,8,8);
-  ctx.fillStyle=pad.btn[1]?'#0f0':'#0808';
-  ctx.fillRect(x+113,y+28,8,8);
-  ctx.fillStyle=pad.btn[2]?'#00f':'#0808';
-  ctx.fillRect(x+95,y+28,8,8);
-  ctx.fillStyle=pad.btn[3]?'#ff0':'#0808';   //btn3
-  ctx.fillRect(x+104,y+19,8,8);
-  ctx.fillStyle=pad.btn[4]?'#fff':'#0808';
-  ctx.fillRect(x+2,y+2,32,8);
-  ctx.fillStyle=pad.btn[5]?'#fff':'#0808';
-  ctx.fillRect(x+94,y+2,32,8);
+  ctx.fillStyle = pad.btn[0] ? '#f00' : '#0808';   //btn0
+  ctx.fillRect(x + 104, y + 19, 8, 8);
+  ctx.fillStyle = pad.btn[1] ? '#0f0' : '#0808';
+  ctx.fillRect(x + 113, y + 28, 8, 8);
+  ctx.fillStyle = pad.btn[2] ? '#ff0' : '#0808';   //btn3
+  ctx.fillRect(x + 104, y + 37, 8, 8);
+  ctx.fillStyle = pad.btn[3] ? '#00f' : '#0808';
+  ctx.fillRect(x + 95, y + 28, 8, 8);
+  ctx.fillStyle = pad.btn[4] ? '#fff' : '#0808';
+  ctx.fillRect(x + 2, y + 2, 32, 8);
+  ctx.fillStyle = pad.btn[5] ? '#fff' : '#0808';
+  ctx.fillRect(x + 94, y + 2, 32, 8);
 
-  drawCircle(x+48,y+32,4,'#000');  // btn6
-  drawCircle(x+48,y+32,3,pad.btn[6] ? '#fff':'#000');  // btn6
+  drawCircle(x + 48, y + 32, 4, '#000');  // btn6
+  drawCircle(x + 48, y + 32, 3, pad.btn[6] ? '#fff' : '#000');  // btn6
 
-  drawCircle(x+58,y+32,4,'#000'); // btn7
-  drawCircle(x+58,y+32,3,pad.btn[7] ? '#fff':'#000');  // btn6
+  drawCircle(x + 58, y + 32, 4, '#000'); // btn7
+  drawCircle(x + 58, y + 32, 3, pad.btn[7] ? '#fff' : '#000');  // btn6
 }
 
 
@@ -66,8 +66,8 @@ let pointerY = 0;
 
 _loop.update = ()=>{
   hue = (hue + 5) % 360;
-  pointerX = Math.min(640,Math.max((pointerX + _pad[0].axis[2]*32), 0));
-  pointerY = Math.min(360,Math.max((pointerY + _pad[0].axis[3]*32), 0));
+  pointerX = Math.min(640,Math.max((pointerX + _pad[0].axis[2] * 32), 0));
+  pointerY = Math.min(360,Math.max((pointerY + _pad[0].axis[3] * 32), 0));
   if(_pad[0].btn[4]){
     _padCfg.pointerLock(true);
   }
@@ -87,7 +87,7 @@ _loop.draw = ()=>{
   drawPad(120,260, _pad[3]);
   ctx.fillStyle = `hsl(${hue+180},50%,50%)`;
   drawPad(390,260, _pad[4]);
-  ctx.strokeStyle='#246';
+  ctx.strokeStyle = '#246';
   ctx.beginPath();
   ctx.lineWidth = 1;
   const x = 320 + _pad[0].axis[2] * 320;
@@ -97,10 +97,10 @@ _loop.draw = ()=>{
   ctx.moveTo(x, y - 16);
   ctx.lineTo(x, y + 16);
   ctx.stroke();
-  ctx.strokeRect(.2*320+320,.5*-180+180,.8*320,.5*-180);
-  ctx.strokeRect(-1*320+320,-1*-180+180,1*320,1*-180);
-  ctx.strokeRect(0*320+320,-1*-180+180,1*320,1*-180);
-  drawCircle(pointerX,pointerY,24,'#f008');
+  ctx.strokeRect(.2 * 320 + 320, .5 * -180 + 180, .8 * 320, .5 * -180);
+  ctx.strokeRect(-1 * 320 + 320, -1 * -180 + 180, 1 * 320, 1 * -180);
+  ctx.strokeRect(0 * 320 + 320, -1 * -180 + 180, 1 * 320, 1 * -180);
+  drawCircle(pointerX, pointerY, 24, '#f008');
 }
 
 _padCfg.kbAdd({key: 'KeyY', map: [2, 'btn', 3]});

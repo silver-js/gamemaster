@@ -117,10 +117,10 @@ const tpMoveEvt = (e)=>{
         _pad[0].axis[a.m[1]] = Math.max(-.2,Math.min((tY(e)-a.oY)*tpRatio,.2))*5;
         break;
       case 'swipe':
-        _pad[0].btn[a.m[0]] = (tY(e) - a.oY)*tpRatio > .1 ? 255 : 0;
+        _pad[0].btn[a.m[0]] = (tY(e) - a.oY) * tpRatio < -.1 ? 255 : 0;
         _pad[0].btn[a.m[1]] = tX(e) - a.oX > .1 ? 255 : 0;
-        _pad[0].btn[a.m[2]] = tX(e) - a.oX < -.1 ? 255 : 0;
-        _pad[0].btn[a.m[3]] = (tY(e) - a.oY)*tpRatio < -.1 ? 255 : 0;
+        _pad[0].btn[a.m[2]] = (tY(e) - a.oY) * tpRatio > .1 ? 255 : 0;
+        _pad[0].btn[a.m[3]] = tX(e) - a.oX < -.1 ? 255 : 0;
         break;
       default:
         break;
@@ -466,8 +466,8 @@ export const _loop = {
 const tick = ()=>{
   timer[4] = performance.now();
   while(timer[0] < timer[4]){
-    _loop.update();
     _padUpdate();
+    _loop.update();
     timer[0] += (timer[4] - timer[0]) > (8 * timer[1]) ? timer[1] * 8 : timer[1];
   }
   if(timer[2] < timer[4]){

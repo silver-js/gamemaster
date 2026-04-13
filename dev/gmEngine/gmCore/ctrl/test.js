@@ -22,9 +22,9 @@ _padCfg.tpAdd(                  // adds a specific touch area to interact as a b
 _padCfg.tpRemove(-1,-1);        // removes a touch area, just needs x,y coordinates.
 
 _padCfg.tpAdd(
-  -1, -1, .5, .5,
+  -1, -1, 1, 1,
   'swipe',
-  [1, 2, 3, 4], 5
+  [0, 1, 2, 3], 5
 )
 
 console.log(_padCfg.getKbMap());  // returns keyboard mappings.
@@ -90,7 +90,7 @@ setInterval(
     ctx.fillText(_pad[0].axis[1],100,300)
     const kbInput = _kb.input();
     if(kbInput.length) console.log(kbInput)
-  },500
+  },60
 );
 
 _kb.typeMode(false);
