@@ -33,15 +33,17 @@ const mouseWheelEvt = (e)=>{
     padPulse.push([0,5]);
   }
 }
+
 const mouseMoveEvt = (e)=>{
   if(document.pointerLockElement){
-    mLockArr[0] += e.movementX/pTarget.offsetWidth * 2;
-    mLockArr[1] += e.movementY/pTarget.offsetWidth * 2;
-    _pad[0].axis.set([mLockArr[0], mLockArr[1]], 2);
+    const mX = e.movementX;
+    const mY = e.movementY;
+    mLockArr[0] += mX / pTarget.offsetWidth * 32;
+    mLockArr[1] += mY / pTarget.offsetWidth * 32;
     return
   }
   if(pLock) return;
-  _pad[0].axis.set([e.offsetX / pTarget.offsetWidth * 2 - 1, e.offsetY/pTarget.offsetHeight * 2 - 1], 2);
+  _pad[0].axis.set([e.offsetX / pTarget.offsetWidth * 2 - 1, e.offsetY / pTarget.offsetHeight * 2 - 1], 2);
 }
 const mouseOutEvt = (e)=>{
   _pad[0].axis[2] *= 1.2;
@@ -102,7 +104,7 @@ const tpStartEvt = (e)=>{
   }
   _pad[0].btn[3] = 255;
   if(pLock){
-    tLockArr.set([x,y,x,y]);
+    tLockArr.set([x * 16, y * 8, x * 16, y * 8]);
     return;
   }
   _pad[0].axis.set([x, y], 2);
@@ -129,14 +131,14 @@ const tpMoveEvt = (e)=>{
   }
   if(pLock){
     _pad[0].axis.set([(tX(e) - tLockArr[0]) * 2, (tY(e) - tLockArr[1]) * 2], 2);
-    tLockArr.set([tX(e), tY(e)], 2);
+    tLockArr.set([tX(e) * 16, tY(e) * 8], 2);
     return;
   }
   _pad[0].axis.set([tX(e), tY(e)], 2);
 }
 const tpEndEvt = (e)=>{
   if (e.cancelable) e.preventDefault();
-  tLockArr.set([0,0]);
+  tLockArr.set([0, 0, 0, 0]);
   const a = activeArea[e.changedTouches[0].identifier];
   if(a){
     switch(a.t){
@@ -156,7 +158,7 @@ const tpEndEvt = (e)=>{
       default:
         break;
     }
-    if(a.c>=0){
+    if(a.c >= 0){
       if(tX(e) == a.oX && tY(e) == a.oY){
         padPulse.push([0, a.c, 0]);
       }
@@ -210,7 +212,7 @@ const kDwnEvt = (e)=>{
 
 const kUpEvt = (e)=>{
   const i = kbArr.findIndex(n=>n==e.code);
-  if(i>=0){
+  if(i >= 0){
     e.preventDefault();
     kbArr.splice(i,1);
     const rk = kbMap[e.code];
@@ -364,9 +366,13 @@ const pulseUpdate = ()=>{
   }
   // pointer lock
   if(pLock){
+    _pad[0].axis.set([
+      mLockArr[0]||tLockArr[2] - tLockArr[0],
+      mLockArr[1]||tLockArr[3] - tLockArr[1],
+    ],2);
+    
     mLockArr.set([0, 0]);
-    tLockArr.set([tLockArr[2],tLockArr[3]]);
-    _pad[0].axis.set([0, 0], 2);
+    tLockArr.set([tLockArr[2], tLockArr[3]]);
   }
 }
 

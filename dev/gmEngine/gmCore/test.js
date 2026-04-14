@@ -4,7 +4,8 @@ const canv = document.getElementById('game');
 const ctx = canv.getContext('2d');
 
 _padCfg.pointerTarget(canv);
-_loop.setClock(10);
+_loop.setClock(60);
+_loop.setFps(60);
 
 //_cfg.tpAdd(-1,-.5,.8,.5,'btn',4);
 //_cfg.tpRemove(-1,-.5);
@@ -62,7 +63,7 @@ const drawPad = (x,y,pad)=>{
 let hue = 0;
 let pointerX = 0;
 let pointerY = 0;
-
+_padCfg.pointerLock(true)
 
 _loop.update = ()=>{
   hue = (hue + 5) % 360;
