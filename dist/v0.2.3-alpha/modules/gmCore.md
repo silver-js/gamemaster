@@ -1,4 +1,4 @@
-# GM Core
+# GM Core v0.2.3a
 
 - this is the main module, handles the update and draw loops, and the controllers.  
 

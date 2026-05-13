@@ -23,8 +23,8 @@ const deg = Math.PI/180;
 // WEBGL2:
 const gl = canv.getContext('webgl2');
 gl.imageSmoothingEnabled = false;
-gl.webkitImageSmoothingEnabled = false;
-gl.mozImageSmoothingEnabled = false;
+//gl.webkitImageSmoothingEnabled = false;
+//gl.mozImageSmoothingEnabled = false;
 gl.enable(gl.BLEND);
 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -263,8 +263,8 @@ const loadTexture = (img, tu) =>{
   gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, loaderCanvas.width, loaderCanvas.width, loaderCanvas.height / loaderCanvas.width , 0, gl.RGBA, gl.UNSIGNED_BYTE, img);
 
   gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
-  //gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_NEAREST);
-  //gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST_MIPMAP_NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }
 
 loadTexture(loaderCanvas, 4);
@@ -284,6 +284,7 @@ const loadFont = (id, font)=>{
   loaderCtx.imageSmoothingEnabled = false;
   loaderCtx.webkitImageSmoothingEnabled = false;
   loaderCtx.mozImageSmoothingEnabled = false;
+
   loaderCtx.textBaseline = 'bottom';
   loaderCtx.fillStyle = `#000`;
   fontStrArr.forEach((n, i)=>{
@@ -356,13 +357,11 @@ export const _gfx = {
     let tH = Math.floor(aImg.height / tileSize);
     loaderCanvas.width = tileSize;
     loaderCanvas.height = tileSize * tW * tH;
-    loaderCtx.imageSmoothingEnabled = false;
-    loaderCtx.webkitImageSmoothingEnabled = false;
-    loaderCtx.mozImageSmoothingEnabled = false;
     loaderCtx.fillStyle = "#fff";
+    
     for(let i = 0; i < tW; i++){
       for(let j = 0; j < tH; j++){
-        loaderCtx.drawImage(aImg, i * 32, j * 32, 32, 32, 0, loaderCanvas.height - 32 * (2 + i + (j * tW)) , 32, 32);
+        loaderCtx.drawImage(aImg, i * tileSize, j * tileSize, tileSize, tileSize, 0, loaderCanvas.height - tileSize * (2 + i + (j * tW)) , tileSize, tileSize);
       }
     };
     loadTexture(loaderCanvas, id + 4);

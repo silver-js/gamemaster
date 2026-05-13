@@ -7,10 +7,21 @@
 
 ```  
 {
-  "img":[
-    <base64imgData_a>,
-    <base64imgData_b>,
-    <base64imgData_c>
+  graphics:[
+  	{
+  		type: 'spr',
+  		id: 'tiles',
+  		width: 16,
+  		height: 16,
+  		margin: 0,
+  		offset: 0,
+  		data: '<base64imgData_a>'
+  	},
+  	{
+  		type: 'img',
+  		id: 'background',
+  		data: '<base64imgData_b>'
+  	}
   ],
   "map":[
     <mapData_a>,
